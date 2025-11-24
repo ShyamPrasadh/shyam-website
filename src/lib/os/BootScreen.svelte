@@ -78,13 +78,14 @@
     }
 
     .hello-text {
-        font-size: 40px;
-        font-weight: 300;
+        font-size: 48px;
+        font-weight: 500;
+        font-style: italic;
         font-family:
             "SF Pro Display",
             -apple-system,
             sans-serif;
-        letter-spacing: 2px;
+        letter-spacing: 0px;
         animation: fadeIn 0.2s ease-in-out;
     }
 

@@ -37,7 +37,7 @@
     {
       id: "about",
       title: "About Me",
-      icon: "https://upload.wikimedia.org/wikipedia/commons/c/c9/Finder_Icon_macOS_Big_Sur.png",
+      icon: import.meta.env.BASE_URL + "icons/finder.png",
       fallback: "👤",
       color: "#FF9F0A",
       component: About,
@@ -53,7 +53,7 @@
     {
       id: "portfolio",
       title: "Work",
-      icon: "https://icon-icons.com/icons2/2402/PNG/512/xcode_macos_bigsur_icon_145025.png",
+      icon: import.meta.env.BASE_URL + "icons/work.png",
       fallback: "💼",
       color: "#0A84FF",
       component: Portfolio,

@@ -3,42 +3,96 @@
 
     export let apps = [];
 
+    let mouseX = null;
+    let dockElement;
+
     function handleAppClick(app) {
-        windowStore.openWindow(app.id, app.title, app.component);
+        windowStore.openWindow(
+            app.id,
+            app.title,
+            app.component,
+            {},
+            Math.random() * 200 + 100,
+            Math.random() * 100 + 50,
+        );
+    }
+
+    function handleMouseMove(e) {
+        if (!dockElement) return;
+        const rect = dockElement.getBoundingClientRect();
+        mouseX = e.clientX - rect.left;
+    }
+
+    function handleTouchMove(e) {
+        if (!dockElement || !e.touches[0]) return;
+        const rect = dockElement.getBoundingClientRect();
+        mouseX = e.touches[0].clientX - rect.left;
+    }
+
+    function handleMouseLeave() {
+        mouseX = null;
+    }
+
+    function handleTouchEnd() {
+        mouseX = null;
+    }
+
+    function getScale(index) {
+        if (mouseX === null) return 1;
+
+        const items = dockElement?.querySelectorAll(".dock-item");
+        if (!items || !items[index]) return 1;
+
+        const item = items[index];
+        const rect = item.getBoundingClientRect();
+        const dockRect = dockElement.getBoundingClientRect();
+        const itemCenter = rect.left + rect.width / 2 - dockRect.left;
+        const distance = Math.abs(mouseX - itemCenter);
+
+        // Reduced magnification effect
+        const maxScale = 1.3;
+        const minScale = 1;
+        const range = 100; // pixels
+
+        if (distance < range) {
+            const scale = maxScale - (distance / range) * (maxScale - minScale);
+            return Math.max(minScale, scale);
+        }
+
+        return minScale;
     }
 </script>
 
 <div class="dock-container">
-    <div class="dock">
-        {#each apps as app}
+    <div
+        class="dock"
+        bind:this={dockElement}
+        on:mousemove={handleMouseMove}
+        on:mouseleave={handleMouseLeave}
+        on:touchmove={handleTouchMove}
+        on:touchend={handleTouchEnd}
+    >
+        {#each apps as app, i}
             <!-- svelte-ignore a11y-click-events-have-key-events -->
             <!-- svelte-ignore a11y-no-static-element-interactions -->
             <div class="dock-item" on:click={() => handleAppClick(app)}>
                 <div
                     class="icon"
-                    style={app.icon.startsWith("http") ||
-                    app.icon.startsWith("/")
-                        ? "background: none;"
-                        : `background-color: ${app.color || "#ccc"}`}
+                    style="transform: scale({getScale(
+                        i,
+                    )}) translateY({mouseX !== null && getScale(i) > 1
+                        ? -((getScale(i) - 1) * 20)
+                        : 0}px);"
                 >
-                    {#if app.icon.startsWith("http") || app.icon.startsWith("/")}
-                        <img
-                            src={app.icon}
-                            alt={app.title}
-                            on:error={(e) => {
-                                e.target.style.display = "none";
-                                e.target.nextElementSibling.style.display =
-                                    "block";
-                            }}
-                        />
-                        <span class="fallback-icon" style="display: none;"
-                            >{app.fallback || "📱"}</span
-                        >
+                    {#if app.icon && (app.icon.startsWith("http") || app.icon.startsWith("/") || app.icon.includes("import.meta"))}
+                        <img src={app.icon} alt={app.title} class="icon-img" />
                     {:else}
-                        {app.icon || "📱"}
+                        <span class="fallback-icon"
+                            >{app.icon || app.fallback}</span
+                        >
                     {/if}
                 </div>
-                <div class="tooltip">{app.title}</div>
+                <span class="tooltip">{app.title}</span>
             </div>
         {/each}
     </div>
@@ -53,7 +107,7 @@
         display: flex;
         justify-content: center;
         z-index: 9000;
-        pointer-events: none; /* Let clicks pass through around the dock */
+        pointer-events: none;
     }
 
     .dock {
@@ -62,27 +116,23 @@
         -webkit-backdrop-filter: blur(20px);
         border: 1px solid rgba(255, 255, 255, 0.2);
         border-radius: 24px;
-        padding: 12px;
+        padding: 16px;
         display: flex;
         gap: 12px;
         pointer-events: auto;
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-        transition: width 0.2s ease;
+        align-items: flex-end;
+        min-height: 90px;
     }
 
     .dock-item {
         position: relative;
         cursor: pointer;
-        transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         display: flex;
         flex-direction: column;
         align-items: center;
-        transform-origin: bottom center;
-    }
-
-    .dock-item:hover {
-        transform: scale(1.3) translateY(-15px);
-        margin: 0 15px;
+        justify-content: flex-end;
+        padding: 0 6px;
     }
 
     .icon {
@@ -95,14 +145,17 @@
         font-size: 28px;
         color: white;
         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-        transition: transform 0.2s;
+        transition: transform 0.2s cubic-bezier(0.33, 1, 0.68, 1);
+        will-change: transform;
+        transform-origin: bottom center;
     }
 
-    .icon img {
+    .icon-img {
         width: 100%;
         height: 100%;
         object-fit: contain;
         border-radius: 14px;
+        pointer-events: none;
     }
 
     .fallback-icon {
@@ -140,30 +193,27 @@
             border-radius: 0;
             border: none;
             border-top: 1px solid rgba(255, 255, 255, 0.2);
-            padding: 8px 4px;
+            padding: 12px 4px;
             justify-content: space-around;
             background: var(--dock-bg);
+            min-height: 70px;
+            gap: 4px;
         }
 
         .dock-item {
             flex: 1;
             max-width: 70px;
-        }
-
-        /* Disable hover effects on mobile */
-        .dock-item:hover {
-            transform: none;
-            margin: 0;
+            padding: 0 2px;
         }
 
         .icon {
-            width: 44px;
-            height: 44px;
-            font-size: 22px;
+            width: 48px;
+            height: 48px;
+            font-size: 24px;
         }
 
         .tooltip {
-            display: none; /* Hide tooltips on mobile */
+            display: none;
         }
     }
 
@@ -172,11 +222,6 @@
         .icon {
             width: 48px;
             height: 48px;
-        }
-
-        .dock-item:hover {
-            transform: scale(1.2) translateY(-10px);
-            margin: 0 10px;
         }
     }
 </style>
