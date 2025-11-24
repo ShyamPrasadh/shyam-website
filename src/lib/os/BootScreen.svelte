@@ -27,17 +27,9 @@
             i++;
         }, 200);
 
-        // After 2.5 seconds, play the startup sound and fade out
+        // After 2.5 seconds, fade out
         setTimeout(() => {
             clearInterval(interval);
-
-            // Play Mac startup sound - using local file
-            const audio = new Audio("/sounds/mac-startup.mp3");
-            audio.volume = 0.7;
-            audio.play().catch((err) => {
-                console.log("Audio playback failed:", err);
-                // Silently fail if audio doesn't play (browser restrictions)
-            });
 
             visible = false;
             setTimeout(() => {

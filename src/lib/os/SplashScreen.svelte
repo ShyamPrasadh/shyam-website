@@ -5,6 +5,23 @@
     const dispatch = createEventDispatcher();
 
     function handleStart() {
+        // Schedule audio to play in 2.5 seconds (when boot animation completes)
+        setTimeout(() => {
+            // Use Vite's base URL to handle both local and production paths
+            const audioPath =
+                import.meta.env.BASE_URL + "sounds/mac-startup.mp3";
+            const audio = new Audio(audioPath);
+            audio.volume = 0.7;
+            audio.play().catch((err) => {
+                console.error(
+                    "Audio playback failed:",
+                    err,
+                    "Path:",
+                    audioPath,
+                );
+            });
+        }, 2500);
+
         dispatch("start");
     }
 </script>
