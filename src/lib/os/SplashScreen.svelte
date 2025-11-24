@@ -39,7 +39,6 @@
         <button class="start-button" on:click={handleStart}>
             Press to Start
         </button>
-        <p class="hint">Click to enable sound</p>
     </div>
 </div>
 
@@ -56,8 +55,8 @@
         align-items: center;
         justify-content: center;
         z-index: 10000;
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-            Helvetica, Arial, sans-serif;
+        font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display",
+            "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     }
 
     .content {
@@ -86,9 +85,11 @@
 
     h1 {
         font-size: 48px;
-        font-weight: 300;
-        letter-spacing: -1px;
+        font-weight: 200;
+        letter-spacing: -0.5px;
         margin: 0;
+        font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display",
+            sans-serif;
     }
 
     .start-button {
@@ -97,12 +98,14 @@
         color: white;
         padding: 16px 48px;
         font-size: 18px;
-        font-weight: 500;
+        font-weight: 400;
         border-radius: 980px;
         cursor: pointer;
         transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
         backdrop-filter: blur(10px);
         -webkit-backdrop-filter: blur(10px);
+        font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text",
+            sans-serif;
     }
 
     .start-button:hover {
@@ -113,11 +116,5 @@
 
     .start-button:active {
         transform: scale(0.98);
-    }
-
-    .hint {
-        font-size: 14px;
-        opacity: 0.6;
-        margin: 0;
     }
 </style>
