@@ -24,20 +24,23 @@
 
 [data-theme="dark"] {
     /* Dark Mode Colors */
-    --bg-color: #1e1e1e;
+    --bg-color: #1c1c1e;
+    /* Unified dark background */
     --text-primary: #ffffff;
     --text-color: #ffffff;
-    --text-secondary: #a0a0a0;
-    --sidebar-bg: #2d2d2d;
-    --card-bg: #2d2d2d;
-    --border-color: #404040;
+    --text-secondary: #86868b;
+    --sidebar-bg: #1c1c1e;
+    --card-bg: #2c2c2e;
+    /* Slightly lighter for cards */
+    --border-color: #38383a;
     --accent-color: #0a84ff;
     --accent-hover: #409CFF;
-    --window-bg: rgba(30, 30, 30, 0.85);
-    --dock-bg: rgba(0, 0, 0, 0.4);
-    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.2);
-    --shadow-md: 0 4px 24px rgba(0, 0, 0, 0.3);
-    --shadow-lg: 0 8px 40px rgba(0, 0, 0, 0.5);
+    --window-bg: #1c1c1e;
+    /* Solid background for windows in dark mode */
+    --dock-bg: rgba(28, 28, 30, 0.8);
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 24px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 8px 40px rgba(0, 0, 0, 0.6);
 }
 
 /* Mobile-specific variables */
@@ -105,9 +108,14 @@ p {
 }
 
 .gradient-text {
-    background: linear-gradient(135deg, #1D1D1F 0%, #434344 100%);
+    background: linear-gradient(135deg,
+            #667eea 0%,
+            #764ba2 50%,
+            #f093fb 100%);
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
+    display: inline-block;
 }
 
 /* Utility Classes */

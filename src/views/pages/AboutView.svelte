@@ -1,88 +1,188 @@
+<script>
+    import { flip } from "svelte/animate";
+    import { fade } from "svelte/transition";
+
+    let cards = [
+        {
+            id: 1,
+            type: "profile",
+            size: "large",
+            title: "The Strategist",
+            content:
+                "I don't just design screens; I design systems. Bridging the gap between user empathy and business viability.",
+            icon: "🎯",
+        },
+        {
+            id: 2,
+            type: "trait",
+            size: "medium",
+            title: "Ambiguity Navigator",
+            content:
+                "Thriving in the unknown. I turn messy problems into clear, actionable roadmaps.",
+            icon: "🧭",
+        },
+        {
+            id: 3,
+            type: "trait",
+            size: "medium",
+            title: "The Empath",
+            content:
+                "Advocate for the user. I listen, observe, and translate human needs into digital solutions.",
+            icon: "❤️",
+        },
+        {
+            id: 4,
+            type: "skills",
+            size: "wide",
+            title: "The Toolkit",
+            tags: [
+                "Figma",
+                "User Research",
+                "Prototyping",
+                "Design Systems",
+                "Wireframing",
+                "Usability Testing",
+                "HTML/CSS/JS",
+            ],
+            icon: "🛠️",
+        },
+        {
+            id: 5,
+            type: "experience",
+            size: "wide",
+            title: "Professional Journey",
+            items: [
+                {
+                    role: "Associate Software Engineer",
+                    org: "Accenture",
+                    date: "Feb 2024 – Present",
+                    desc: "UX Research & High-fidelity Prototyping",
+                },
+                {
+                    role: "Freelance Designer",
+                    org: "Self-Employed",
+                    date: "Dec 2023 – Present",
+                    desc: "End-to-end Product Design for Startups",
+                },
+            ],
+            icon: "💼",
+        },
+        {
+            id: 6,
+            type: "education",
+            size: "medium",
+            title: "Education",
+            content: "B.E. Computer Science\nSona College of Technology",
+            sub: "2019 - 2023",
+            icon: "🎓",
+        },
+        {
+            id: 7,
+            type: "certification",
+            size: "medium",
+            title: "Certified",
+            content: "DesignBoat UI/UX School\nIntensified Course",
+            sub: "2023",
+            icon: "📜",
+        },
+        {
+            id: 8,
+            type: "hobby",
+            size: "wide",
+            title: "Beyond Design",
+            content:
+                "When I'm not pushing pixels, I'm likely exploring photography, gaming, or deconstructing the UX of everyday objects.",
+            icon: "🎮",
+        },
+    ];
+
+    let hoveringIndex = null;
+
+    function handleDragStart(event, index) {
+        event.dataTransfer.effectAllowed = "move";
+        event.dataTransfer.dropEffect = "move";
+        event.dataTransfer.setData("text/plain", index);
+        hoveringIndex = index;
+    }
+
+    function handleDragOver(event, index) {
+        event.preventDefault();
+        hoveringIndex = index;
+    }
+
+    function handleDrop(event, targetIndex) {
+        event.preventDefault();
+        const sourceIndex = parseInt(event.dataTransfer.getData("text/plain"));
+
+        if (sourceIndex === targetIndex) return;
+
+        const newCards = [...cards];
+        const [movedCard] = newCards.splice(sourceIndex, 1);
+        newCards.splice(targetIndex, 0, movedCard);
+
+        cards = newCards;
+        hoveringIndex = null;
+    }
+
+    function handleDragEnd() {
+        hoveringIndex = null;
+    }
+</script>
+
 <section id="about" class="section-container">
     <div class="section-header">
-        <h2 class="section-title">About Me</h2>
+        <h2 class="section-title">
+            <span class="gradient-text">About Me</span>
+        </h2>
         <p class="section-desc">
-            Strategic UX Designer & Associate Software Engineer.
+            Drag & drop the boxes to explore my character.
         </p>
     </div>
+
     <div class="bento-grid">
-        <div class="bento-card large-card profile-card">
-            <h3>Strategic UX Designer</h3>
-            <p>
-                I turn ambiguous requirements into clean, intuitive, and
-                scalable interfaces. Grounded in data, driven by empathy.
-            </p>
-        </div>
-        <div class="bento-card medium-card leadership-card">
-            <div class="icon">🎓</div>
-            <h3>Student Chairman</h3>
-            <p>CSE Dept (2021-23)</p>
-        </div>
-        <div class="bento-card medium-card leadership-card">
-            <div class="icon">📝</div>
-            <h3>Secretary</h3>
-            <p>CSE Dept (2021-23)</p>
-        </div>
-        <div class="bento-card wide-card skills-card">
-            <h3>Skills & Tools</h3>
-            <div class="tags">
-                <span>Figma & XD</span>
-                <span>User Research</span>
-                <span>Interaction Design</span>
-                <span>Prototyping</span>
-                <span>SAP SD</span>
-                <span>Ambiguity to Clarity</span>
-                <span>Data-Driven</span>
-                <span>Design Strategy</span>
+        {#each cards as card, index (card.id)}
+            <div
+                class="bento-card {card.size}-card {hoveringIndex === index
+                    ? 'hovering'
+                    : ''}"
+                draggable="true"
+                role="listitem"
+                on:dragstart={(e) => handleDragStart(e, index)}
+                on:dragover={(e) => handleDragOver(e, index)}
+                on:drop={(e) => handleDrop(e, index)}
+                on:dragend={handleDragEnd}
+                animate:flip={{ duration: 300 }}
+                in:fade={{ duration: 300 }}
+            >
+                <div class="card-icon">{card.icon}</div>
+                <div class="card-content">
+                    <h3>{card.title}</h3>
+
+                    {#if card.type === "skills"}
+                        <div class="tags">
+                            {#each card.tags as tag}
+                                <span>{tag}</span>
+                            {/each}
+                        </div>
+                    {:else if card.type === "experience"}
+                        <ul class="experience-list">
+                            {#each card.items as item}
+                                <li>
+                                    <strong>{item.role}</strong>
+                                    <span class="org">{item.org}</span>
+                                    <span class="date">{item.date}</span>
+                                </li>
+                            {/each}
+                        </ul>
+                    {:else}
+                        <p class="text-content">{card.content}</p>
+                        {#if card.sub}
+                            <p class="sub-text">{card.sub}</p>
+                        {/if}
+                    {/if}
+                </div>
             </div>
-        </div>
-        <!-- Additional Details from Resume -->
-        <div class="bento-card wide-card education-card">
-            <h3>Education</h3>
-            <ul>
-                <li>
-                    <strong>DesignBoat</strong> – Intensified UI/UX Design Course
-                    (Jun 2023 – Nov 2023)
-                </li>
-                <li>
-                    <strong>Sona College of Technology</strong> – B.E. Computer Science
-                    (Aug 2019 – May 2023)
-                </li>
-            </ul>
-        </div>
-        <div class="bento-card wide-card certifications-card">
-            <h3>Certifications</h3>
-            <ul>
-                <li>
-                    DesignBoat UI/UX School – Intensified UI/UX Design Course
-                    (Dec 2023)
-                </li>
-                <li>Google UX Design (Jun 2025)</li>
-            </ul>
-        </div>
-        <div class="bento-card wide-card experience-card">
-            <h3>Professional Experience</h3>
-            <ul>
-                <li>
-                    <strong>Associate Software Engineer, Accenture</strong> (Feb
-                    2024 – Present) – UX research, wireframes, high‑fidelity prototypes.
-                </li>
-                <li>
-                    <strong>Freelance Designer</strong> (Dec 2023 – Present) – End‑to‑end
-                    UX/UI for startups.
-                </li>
-            </ul>
-        </div>
-        <div class="bento-card wide-card projects-card">
-            <h3>Projects</h3>
-            <ul>
-                <li>
-                    Thriftz – Luxury Pre‑owned Store (Aug 2024) – Full product
-                    design across iOS, Android, Web.
-                </li>
-                <li>Additional projects detailed in Resume.</li>
-            </ul>
-        </div>
+        {/each}
     </div>
 </section>
 
@@ -91,147 +191,249 @@
         padding: 2rem;
         color: var(--text-color);
         background: var(--bg-color);
-        min-height: 100%;
-        transition:
-            background 0.3s,
-            color 0.3s;
+        height: 100%;
+        overflow-y: auto;
+        /* Hide scrollbar for cleaner look */
+        scrollbar-width: none;
+    }
+    .section-container::-webkit-scrollbar {
+        display: none;
     }
 
     .section-header {
         margin-bottom: 2rem;
         text-align: center;
+        max-width: 800px;
+        margin-left: auto;
+        margin-right: auto;
     }
 
     .section-title {
-        font-size: 2.5rem;
-        font-weight: 700;
+        font-size: 3rem;
+        font-weight: 800;
         margin-bottom: 0.5rem;
-        background: linear-gradient(
-            135deg,
-            var(--accent-color) 0%,
-            #00c6ff 100%
-        );
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
+        letter-spacing: -0.02em;
     }
 
     .section-desc {
-        font-size: 1.2rem;
+        font-size: 1.1rem;
         color: var(--text-secondary);
+        opacity: 0.8;
     }
 
     .bento-grid {
         display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        grid-template-rows: repeat(2, 300px);
+        grid-template-columns: repeat(1, 1fr); /* Mobile default */
         gap: 1.5rem;
+        max-width: 1400px; /* Wider max-width for "full screen" feel */
+        margin: 0 auto;
+        padding-bottom: 4rem;
+        grid-auto-flow: dense; /* Fills gaps automatically */
+    }
+
+    /* Desktop Grid Layout - 4 Columns for better mixing */
+    @media (min-width: 1024px) {
+        .bento-grid {
+            grid-template-columns: repeat(4, 1fr);
+            /* Use minmax for rows to allow expansion if content is too long */
+            grid-auto-rows: minmax(280px, auto);
+        }
+
+        /* Spans */
+        .large-card {
+            grid-column: span 2;
+            grid-row: span 1;
+        }
+        .wide-card {
+            grid-column: span 2;
+            grid-row: span 1;
+        } /* Changed to 2 to fit side-by-side */
+        .medium-card {
+            grid-column: span 1;
+            grid-row: span 1;
+        }
+        .tall-card {
+            grid-column: span 1;
+            grid-row: span 2;
+        }
+
+        /* Specific overrides for visual balance if needed */
+        .experience-card {
+            grid-column: span 2;
+            grid-row: span 2;
+        } /* Make experience prominent */
+        .skills-card {
+            grid-column: span 2;
+        }
     }
 
     .bento-card {
         background: var(--card-bg);
-        border-radius: 24px;
+        border-radius: 28px; /* Softer corners */
         padding: 2rem;
-        box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
-        transition:
-            transform 0.2s,
-            box-shadow 0.2s;
+        box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
+        border: 1px solid var(--border-color);
         display: flex;
         flex-direction: column;
-        justify-content: center;
-        border: 1px solid var(--border-color);
+        justify-content: flex-start; /* Align to top to prevent weird spacing */
+        cursor: grab;
+        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        position: relative;
+        overflow: hidden; /* Keep content inside */
+    }
+
+    .bento-card:active {
+        cursor: grabbing;
+        transform: scale(0.98);
+    }
+
+    .bento-card.hovering {
+        border: 2px dashed var(--accent-color);
+        background: rgba(var(--accent-rgb), 0.05);
     }
 
     .bento-card:hover {
-        box-shadow: 0 8px 40px rgba(0, 0, 0, 0.12);
-        transform: translateY(-5px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+        transform: translateY(-4px);
+        z-index: 10;
+        border-color: var(--accent-color);
     }
 
-    .large-card {
-        grid-column: span 2;
-    }
-
-    .medium-card {
-        grid-column: span 1;
+    .card-icon {
+        font-size: 2.5rem;
+        margin-bottom: 1.5rem; /* More space below icon */
+        background: var(--sidebar-bg);
+        width: 60px;
+        height: 60px;
+        display: flex;
         align-items: center;
-        text-align: center;
+        justify-content: center;
+        border-radius: 16px;
+        flex-shrink: 0; /* Prevent icon from shrinking */
     }
 
-    .wide-card {
-        grid-column: span 3;
+    .card-content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        min-width: 0; /* Prevent flex child overflow */
     }
 
-    /* Profile Card Specifics */
-    .profile-card h3 {
-        font-size: 1.8rem;
+    .card-content h3 {
+        font-size: 1.4rem;
+        font-weight: 700;
         margin-bottom: 1rem;
         color: var(--text-color);
+        letter-spacing: -0.01em;
+        line-height: 1.2;
     }
 
-    .profile-card p {
-        font-size: 1.1rem;
+    .text-content {
+        font-size: 1.05rem;
         line-height: 1.6;
         color: var(--text-secondary);
+        white-space: normal; /* Allow text to wrap naturally */
     }
 
-    /* Leadership Card Specifics */
-    .leadership-card h3 {
-        font-size: 1.2rem;
-        margin: 0.5rem 0;
-        color: var(--text-color);
-    }
-
-    .leadership-card p {
+    .sub-text {
+        font-size: 0.9rem;
         color: var(--text-secondary);
+        opacity: 0.7;
+        margin-top: auto; /* Push to bottom */
+        padding-top: 1rem;
     }
 
-    .icon {
-        font-size: 3rem;
-        margin-bottom: 1rem;
-    }
-
-    /* Skills Card Specifics */
-    .skills-card h3 {
-        font-size: 1.5rem;
-        margin-bottom: 1.5rem;
-        color: var(--text-color);
-    }
-
+    /* Tags for Skills */
     .tags {
         display: flex;
         flex-wrap: wrap;
-        gap: 0.8rem;
+        gap: 0.6rem;
     }
 
     .tags span {
         background: var(--sidebar-bg);
-        padding: 0.6rem 1.2rem;
-        border-radius: 12px;
-        font-size: 0.95rem;
+        padding: 0.5rem 1rem;
+        border-radius: 10px;
+        font-size: 0.9rem;
+        font-weight: 500;
         color: var(--text-color);
         border: 1px solid var(--border-color);
-        transition: background 0.2s;
+        transition: all 0.2s;
+        white-space: nowrap; /* Keep tags on one line if possible */
     }
 
     .tags span:hover {
         background: var(--accent-color);
         color: white;
         border-color: var(--accent-color);
+        transform: translateY(-2px);
     }
 
-    @media (max-width: 768px) {
+    /* Experience List */
+    .experience-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .experience-list li {
+        display: flex;
+        flex-direction: column;
+        padding-left: 1rem;
+        border-left: 2px solid var(--border-color);
+    }
+
+    .experience-list strong {
+        color: var(--text-color);
+        font-size: 1.1rem;
+        margin-bottom: 0.2rem;
+    }
+
+    .experience-list .org {
+        color: var(--accent-color);
+        font-weight: 600;
+        font-size: 0.95rem;
+        margin-bottom: 0.2rem;
+    }
+
+    .experience-list .date {
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+        opacity: 0.8;
+    }
+
+    /* Mobile Responsive */
+    @media (max-width: 1023px) {
         .bento-grid {
-            grid-template-columns: 1fr;
-            grid-template-rows: auto;
+            grid-template-columns: repeat(2, 1fr);
+            grid-auto-rows: auto;
         }
 
         .large-card,
+        .wide-card,
+        .experience-card {
+            grid-column: span 2;
+        }
+    }
+
+    @media (max-width: 600px) {
+        .bento-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .large-card,
+        .wide-card,
         .medium-card,
-        .wide-card {
+        .tall-card,
+        .experience-card {
             grid-column: span 1;
         }
 
         .section-title {
-            font-size: 2rem;
+            font-size: 2.2rem;
         }
     }
 </style>
