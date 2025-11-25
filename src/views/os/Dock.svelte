@@ -9,9 +9,14 @@
     let mouseX = null;
     let dockElement;
     let dockRect;
+    let isTouchDevice = false;
 
     // Optimization: Update rect on resize
     onMount(() => {
+        // Detect touch device
+        isTouchDevice =
+            "ontouchstart" in window || navigator.maxTouchPoints > 0;
+
         const updateRect = () => {
             if (dockElement) dockRect = dockElement.getBoundingClientRect();
         };
@@ -21,6 +26,9 @@
     });
 
     function handleAppClick(app) {
+        // Reset mouseX on click to prevent stuck magnification
+        mouseX = null;
+
         windowStore.openWindow(
             app.id,
             app.title,
@@ -32,13 +40,14 @@
     }
 
     function handleMouseMove(e) {
-        if (!dockRect) return;
+        // Disable magnification on touch devices
+        if (isTouchDevice || !dockRect) return;
         mouseX = e.clientX - dockRect.left;
     }
 
     function handleTouchMove(e) {
-        if (!dockRect || !e.touches[0]) return;
-        mouseX = e.touches[0].clientX - dockRect.left;
+        // Don't set mouseX on touch devices to prevent magnification
+        return;
     }
 
     function handleMouseLeave() {
@@ -51,7 +60,8 @@
 
     // Optimized scale calculation
     function getScale(index) {
-        if (mouseX === null || !dockRect) return 1;
+        // Disable magnification on touch devices
+        if (isTouchDevice || mouseX === null || !dockRect) return 1;
 
         // Calculate center based on index and fixed width to avoid layout thrashing
         // Assuming 56px icon + 12px gap + 16px padding
