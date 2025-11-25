@@ -37,17 +37,17 @@
     function handleMaximize() {
         windowStore.toggleMaximize(id);
     }
+
+    $: {
+        console.log(`[Window ${id}] Maximize prop: ${maximized}`);
+    }
 </script>
 
 {#if !minimized}
     <!-- svelte-ignore a11y-no-static-element-interactions -->
     <div
         class="window {maximized ? 'maximized' : ''}"
-        style="left: {maximized ? 0 : x}px; top: {maximized
-            ? 0
-            : y}px; z-index: {zIndex}; width: {maximized
-            ? '100%'
-            : width + 'px'}; height: {maximized ? '100%' : height + 'px'};"
+        style="left: {x}px; top: {y}px; z-index: {zIndex}; width: {width}px; height: {height}px;"
         use:draggable={{
             handle: ".title-bar",
             onDrag: handleDrag,
@@ -95,15 +95,20 @@
         overflow: hidden;
         min-width: 300px;
         min-height: 200px;
+        transition:
+            width 0.3s cubic-bezier(0.25, 0.8, 0.25, 1),
+            height 0.3s cubic-bezier(0.25, 0.8, 0.25, 1),
+            top 0.3s cubic-bezier(0.25, 0.8, 0.25, 1),
+            left 0.3s cubic-bezier(0.25, 0.8, 0.25, 1),
+            border-radius 0.3s;
     }
 
     .window.maximized {
         border-radius: 0;
         width: 100% !important;
-        height: 100% !important;
+        height: calc(100% - 30px) !important; /* Full height minus menu bar */
         top: 30px !important; /* Below menu bar */
         left: 0 !important;
-        height: calc(100vh - 30px) !important;
     }
 
     .title-bar {

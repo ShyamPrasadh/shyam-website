@@ -4,26 +4,26 @@
 
     const dispatch = createEventDispatcher();
     let visible = true;
-    let text = "hello";
+    let currentIndex = 0;
 
-    const languages = [
-        "hello",
-        "hola",
-        "bonjour",
-        "guten tag",
-        "ciao",
-        "olá",
-        "namaste",
-        "salaam",
-        "konnichiwa",
-        "hallo",
+    const uxTerms = [
+        { text: "Research", emoji: "🔍" },
+        { text: "Empathize", emoji: "❤️" },
+        { text: "Define", emoji: "🎯" },
+        { text: "Ideate", emoji: "💡" },
+        { text: "Wireframe", emoji: "📐" },
+        { text: "Prototype", emoji: "🔨" },
+        { text: "Test", emoji: "🧪" },
+        { text: "Iterate", emoji: "🔄" },
+        { text: "Design", emoji: "🎨" },
+        { text: "Deliver", emoji: "🚀" },
     ];
 
     onMount(() => {
-        // Cycle through "hello" in different languages
+        // Cycle through UX design process terms
         let i = 0;
         const interval = setInterval(() => {
-            text = languages[i % languages.length];
+            currentIndex = i % uxTerms.length;
             i++;
         }, 200);
 
@@ -42,8 +42,8 @@
 {#if visible}
     <div class="boot-screen" out:fade={{ duration: 1000 }}>
         <div class="content">
-            <div class="logo"></div>
-            <div class="hello-text">{text}</div>
+            <div class="emoji">{uxTerms[currentIndex].emoji}</div>
+            <div class="hello-text">{uxTerms[currentIndex].text}</div>
         </div>
     </div>
 {/if}
@@ -72,9 +72,10 @@
         gap: 20px;
     }
 
-    .logo {
+    .emoji {
         font-size: 80px;
         margin-bottom: 20px;
+        animation: fadeIn 0.2s ease-in-out;
     }
 
     .hello-text {

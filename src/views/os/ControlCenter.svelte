@@ -1,6 +1,8 @@
 <script>
     import { createEventDispatcher } from "svelte";
     import { fade, slide } from "svelte/transition";
+    import { writable } from "svelte/store";
+    import { windowStore } from "../../lib/stores/windowStore";
 
     export let visible = false;
 
@@ -8,7 +10,9 @@
     let wifi = true;
     let bluetooth = true;
     let airdrop = true;
-    let dnd = false;
+
+    // Maximize windows toggle - stored in localStorage
+    let maximizeWindows = localStorage.getItem("maximizeWindows") === "true";
 
     // State for sliders
     let brightness = 100;
@@ -25,6 +29,11 @@
             document.documentElement.removeAttribute("data-theme");
         }
     }
+
+    function toggleMaximizeWindows() {
+        maximizeWindows = !maximizeWindows;
+        windowStore.toggleMaximizeMode(maximizeWindows);
+    }
 </script>
 
 {#if visible}
@@ -32,12 +41,15 @@
         class="control-center"
         transition:fade={{ duration: 200 }}
         on:click|stopPropagation
+        role="dialog"
+        aria-label="Control Center"
     >
         <div class="grid-container">
             <!-- Connectivity Module -->
             <div class="module connectivity">
                 <div class="toggle-row">
                     <button
+                        type="button"
                         class="toggle-btn {wifi ? 'active' : ''}"
                         on:click={() => (wifi = !wifi)}
                     >
@@ -69,6 +81,7 @@
 
                 <div class="toggle-row">
                     <button
+                        type="button"
                         class="toggle-btn {bluetooth ? 'active' : ''}"
                         on:click={() => (bluetooth = !bluetooth)}
                     >
@@ -97,6 +110,7 @@
 
                 <div class="toggle-row">
                     <button
+                        type="button"
                         class="toggle-btn {airdrop ? 'active' : ''}"
                         on:click={() => (airdrop = !airdrop)}
                     >
@@ -128,11 +142,12 @@
                 </div>
             </div>
 
-            <!-- DND Module -->
+            <!-- Maximize Windows Module -->
             <div class="module dnd">
                 <button
-                    class="dnd-btn {dnd ? 'active' : ''}"
-                    on:click={() => (dnd = !dnd)}
+                    type="button"
+                    class="dnd-btn {maximizeWindows ? 'active' : ''}"
+                    on:click={toggleMaximizeWindows}
                 >
                     <div class="icon-circle">
                         <svg
@@ -146,11 +161,11 @@
                             stroke-linejoin="round"
                         >
                             <path
-                                d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"
+                                d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"
                             ></path>
                         </svg>
                     </div>
-                    <span>Do Not Disturb</span>
+                    <span>Maximize Windows</span>
                 </button>
             </div>
 
@@ -232,6 +247,7 @@
             <!-- Dark Mode Toggle -->
             <div class="module dark-mode">
                 <button
+                    type="button"
                     class="dnd-btn {isDarkMode ? 'active' : ''}"
                     on:click={toggleDarkMode}
                 >
@@ -459,6 +475,7 @@
 
     input[type="range"] {
         -webkit-appearance: none;
+        appearance: none;
         width: 100%;
         height: 20px; /* Taller touch target */
         background: rgba(0, 0, 0, 0.1);
@@ -511,11 +528,5 @@
         height: 20px;
         width: 20px;
         background: white;
-    }
-
-    .module-label {
-        flex: 1;
-        font-weight: 600;
-        font-size: 14px;
     }
 </style>

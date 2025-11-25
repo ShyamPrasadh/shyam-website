@@ -1,31 +1,45 @@
 <section id="portfolio" class="section-container" style="padding: 2rem;">
     <div class="section-header">
-        <h2 class="section-title">Selected Work</h2>
+        <h2 class="section-title">Work</h2>
     </div>
     <div class="portfolio-grid">
         <!-- Placeholder Projects -->
         <article class="project-card">
-            <div class="project-image placeholder-image"></div>
+            <div
+                class="project-image"
+                style="background-image: url('https://mir-s3-cdn-cf.behance.net/project_modules/fs/5c8c0c213911073.60e6e5c9c5f5c.jpg'); background-size: cover; background-position: center;"
+            ></div>
             <div class="project-info">
-                <h3>Case Study 1</h3>
-                <p>UX Research & Strategy</p>
-                <a href="/" class="link-arrow">View Project <span>→</span></a>
+                <h3>Thriftz – UX Case Study</h3>
+                <p>
+                    Comprehensive UX research, strategy, and design for a
+                    sustainable thrift marketplace.
+                </p>
+                <a
+                    href="https://www.behance.net/gallery/213911073/UX-CASE-STUDY-THRIFTZ"
+                    class="link-arrow"
+                    target="_blank"
+                    rel="noopener">View Project <span>→</span></a
+                >
             </div>
         </article>
         <article class="project-card">
-            <div class="project-image placeholder-image"></div>
+            <div
+                class="project-image"
+                style="background-image: url('https://mir-s3-cdn-cf.behance.net/project_modules/fs/5c8c0c218032031.60e6e5c9c5f5c.jpg'); background-size: cover; background-position: center;"
+            ></div>
             <div class="project-info">
-                <h3>Case Study 2</h3>
-                <p>Mobile App Design</p>
-                <a href="/" class="link-arrow">View Project <span>→</span></a>
-            </div>
-        </article>
-        <article class="project-card">
-            <div class="project-image placeholder-image"></div>
-            <div class="project-info">
-                <h3>Case Study 3</h3>
-                <p>Web Redesign</p>
-                <a href="/" class="link-arrow">View Project <span>→</span></a>
+                <h3>Thriftz – Android Presentation</h3>
+                <p>
+                    High‑fidelity Android UI presentation showcasing the final
+                    design system and interactions.
+                </p>
+                <a
+                    href="https://www.behance.net/gallery/218032031/THRIFTZ-ANDROID-PRESENTATION"
+                    class="link-arrow"
+                    target="_blank"
+                    rel="noopener">View Project <span>→</span></a
+                >
             </div>
         </article>
     </div>
@@ -57,20 +71,6 @@
         background-color: #eee;
         background-size: cover;
         background-position: center;
-    }
-
-    .placeholder-image {
-        background: linear-gradient(
-            45deg,
-            #f3f3f3 25%,
-            #e6e6e6 25%,
-            #e6e6e6 50%,
-            #f3f3f3 50%,
-            #f3f3f3 75%,
-            #e6e6e6 75%,
-            #e6e6e6 100%
-        );
-        background-size: 20px 20px;
     }
 
     .project-info {
