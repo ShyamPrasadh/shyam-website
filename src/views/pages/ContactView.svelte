@@ -63,42 +63,71 @@
     }
 
     function generateReply(text) {
+        text = text.toLowerCase();
+
+        // Hiring / Project Request Flow
+        if (
+            text.includes("hire") ||
+            text.includes("project") ||
+            text.includes("freelance") ||
+            text.includes("work with")
+        ) {
+            return "I'd love to collaborate! 🚀 Could you tell me a bit about your project requirements? Or you can email me directly at shyamprasadh247@gmail.com.";
+        }
+
+        // Resume / Experience
+        if (
+            text.includes("experience") ||
+            text.includes("accenture") ||
+            text.includes("sap")
+        ) {
+            return "I'm an Associate Software Engineer at Accenture (Feb 2024 - Present), working on SAP SD modules (Order Management, Pricing, Billing). I also freelance for startups, delivering end-to-end UX/UI solutions! 💼";
+        }
+
+        // Skills
         if (
             text.includes("skill") ||
             text.includes("tool") ||
-            text.includes("figma") ||
-            text.includes("adobe")
+            text.includes("stack")
         ) {
-            return "Shyam is proficient in Figma, Adobe XD, and ProtoPie! 🎨 He's also skilled in User Research, Wireframing, and even SAP SD modules.";
+            return "My toolkit includes Figma, Adobe XD, ProtoPie, HTML/CSS/JS, and Uizard. I specialize in User Research, Wireframing, Prototyping, and Interaction Design. 🎨";
         }
+
+        // Projects
+        if (text.includes("thriftz") || text.includes("project")) {
+            return "One of my key projects is 'Thriftz' - a luxury pre-owned store. I handled the end-to-end product design for iOS, Android, and Web, focusing on trust and price clarity. 🛍️";
+        }
+
+        // Education
         if (
-            text.includes("experience") ||
-            text.includes("work") ||
-            text.includes("accenture")
+            text.includes("education") ||
+            text.includes("college") ||
+            text.includes("degree")
         ) {
-            return "He's currently an Associate Software Engineer at Accenture (since Feb 2024), working on SAP SD projects. Before that, he freelanced for startups! 💼";
+            return "I hold a B.E. in Computer Science from Sona College of Technology (2019-2023) and completed an intensified UI/UX Design course at DesignBoat. 🎓";
         }
-        if (text.includes("project") || text.includes("thriftz")) {
-            return "Ask him about 'Thriftz'! It's a luxury pre-owned store project where he handled end-to-end product design for iOS, Android, and Web. 🛍️";
-        }
-        if (text.includes("lead") || text.includes("chairman")) {
-            return "Leadership is his forte! 🚀 He served as Student Chairman for the CSE Dept (2022-23), leading a 100-member team to organize national-level symposiums.";
-        }
+
+        // Contact
         if (
             text.includes("contact") ||
             text.includes("email") ||
+            text.includes("linkedin") ||
             text.includes("reach")
         ) {
-            return "You can email him at shyamprasadh247@gmail.com 📧 or find him on LinkedIn!";
+            return "You can reach me at shyamprasadh247@gmail.com 📧 or connect with me on LinkedIn!";
         }
+
+        // Greetings
         if (
             text.includes("hello") ||
             text.includes("hi") ||
             text.includes("hey")
         ) {
-            return "Hello! 👋 I can tell you about Shyam's work at Accenture, his freelance projects, or his design skills.";
+            return "Hello! 👋 I'm Shyam's virtual assistant. I can tell you about his work, skills, projects, or how to hire him!";
         }
-        return "That's interesting! 🤔 Try asking about his 'skills', 'experience', 'Thriftz' project, or 'contact' info.";
+
+        // Default
+        return "I'm not sure about that, but I can tell you about my 'experience', 'skills', 'projects', or how to 'contact' me! 😊";
     }
 
     function handleKeydown(e) {
@@ -173,8 +202,8 @@
         flex-direction: column;
         height: 100%;
         background: #fff;
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-            Helvetica, Arial, sans-serif;
+        font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text",
+            "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     }
 
     .header {
@@ -187,6 +216,7 @@
         align-items: center;
         justify-content: center;
         height: 60px;
+        flex-shrink: 0;
     }
 
     .avatar {
@@ -268,6 +298,7 @@
         font-size: 15px;
         line-height: 1.4;
         position: relative;
+        word-wrap: break-word;
     }
 
     .bubble.gray {
@@ -283,8 +314,9 @@
     }
 
     .input-area {
-        padding: 10px 15px 20px; /* Extra bottom padding for aesthetic */
+        padding: 10px 15px 20px;
         background: #fff;
+        flex-shrink: 0;
     }
 
     .input-wrapper {
@@ -359,6 +391,13 @@
         }
         40% {
             transform: scale(1);
+        }
+    }
+
+    /* Mobile Fix: Ensure input is visible above dock */
+    @media (max-width: 768px) {
+        .input-area {
+            padding-bottom: 90px; /* Space for dock */
         }
     }
 </style>

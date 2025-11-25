@@ -1,6 +1,6 @@
 <script>
-    import { draggable } from "../actions/draggable";
-    import { windowStore } from "../stores/windowStore";
+    import { draggable } from "../../lib/actions/draggable";
+    import { windowStore } from "../../lib/stores/windowStore";
     import { fade, scale } from "svelte/transition";
 
     export let id;

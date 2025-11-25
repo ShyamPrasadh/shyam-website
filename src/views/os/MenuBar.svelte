@@ -39,11 +39,8 @@
         <div class="menu-item">Help</div>
     </div>
     <div class="right">
-        <div class="menu-item icon">🔋</div>
-        <div class="menu-item icon">wifi</div>
-        <div class="menu-item icon">🔍</div>
         <div
-            class="menu-item icon"
+            class="menu-item icon control-center-toggle"
             on:click={() => dispatch("toggleControlCenter")}
         >
             <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">

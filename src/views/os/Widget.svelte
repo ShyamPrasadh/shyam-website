@@ -1,5 +1,5 @@
 <script>
-    import { draggable } from "../actions/draggable";
+    import { draggable } from "../../lib/actions/draggable";
 
     // Using emojis for now, could be replaced with images
     const skills = [

@@ -1,25 +1,29 @@
 <script>
   import { fade } from "svelte/transition";
   import { windowStore } from "./lib/stores/windowStore";
-  import MenuBar from "./lib/os/MenuBar.svelte";
-  import Dock from "./lib/os/Dock.svelte";
-  import Window from "./lib/os/Window.svelte";
-  import Widget from "./lib/os/Widget.svelte";
 
-  // Content Components
-  import About from "./lib/About.svelte";
-  import Experience from "./lib/Experience.svelte";
-  import Portfolio from "./lib/Portfolio.svelte";
-  import Contact from "./lib/Contact.svelte";
-  import Hero from "./lib/Hero.svelte"; // Using Hero as "Welcome" app
-  import Resume from "./lib/Resume.svelte";
-  import SplashScreen from "./lib/os/SplashScreen.svelte";
-  import BootScreen from "./lib/os/BootScreen.svelte";
-  import ControlCenter from "./lib/os/ControlCenter.svelte";
+  // Controllers
+  import { WindowController } from "./controllers/WindowController";
+  import { ThemeController } from "./controllers/ThemeController";
+
+  // Models
+  import { dockApps, appConfig } from "./models/AppData";
+
+  // OS Components (Views)
+  import MenuBar from "./views/os/MenuBar.svelte";
+  import Dock from "./views/os/Dock.svelte";
+  import Window from "./views/os/Window.svelte";
+  import Widget from "./views/os/Widget.svelte";
+  import SplashScreen from "./views/os/SplashScreen.svelte";
+  import BootScreen from "./views/os/BootScreen.svelte";
+  import ControlCenter from "./views/os/ControlCenter.svelte";
 
   let splashComplete = false;
   let booted = false;
   let controlCenterVisible = false;
+
+  // Initialize theme on mount
+  ThemeController.initTheme();
 
   function handleSplashStart() {
     splashComplete = true;
@@ -29,67 +33,40 @@
     booted = true;
     // Open Welcome window after boot
     setTimeout(() => {
-      windowStore.openWindow("welcome", "Welcome", Hero, {}, 200, 100);
+      const welcomeApp = dockApps.find((app) => app.id === "welcome");
+      if (welcomeApp) {
+        WindowController.openApp(welcomeApp);
+      }
     }, 500);
   }
 
-  const apps = [
-    {
-      id: "about",
-      title: "About Me",
-      icon: import.meta.env.BASE_URL + "icons/finder.png",
-      fallback: "👤",
-      color: "#FF9F0A",
-      component: About,
-    },
-    {
-      id: "experience",
-      title: "Journey",
-      icon: "https://raw.githubusercontent.com/homarr-labs/dashboard-icons/main/png/apple-maps.png",
-      fallback: "🎓",
-      color: "#30D158",
-      component: Experience,
-    },
-    {
-      id: "portfolio",
-      title: "Work",
-      icon: import.meta.env.BASE_URL + "icons/work.png",
-      fallback: "💼",
-      color: "#0A84FF",
-      component: Portfolio,
-    },
-    {
-      id: "resume",
-      title: "Resume",
-      icon: "https://raw.githubusercontent.com/homarr-labs/dashboard-icons/main/png/apple-notes.png",
-      fallback: "📄",
-      color: "#FFD60A",
-      component: Resume,
-    },
-    {
-      id: "contact",
-      title: "Messages",
-      icon: "https://upload.wikimedia.org/wikipedia/commons/5/51/IMessage_logo.svg",
-      fallback: "💬",
-      color: "#34C759",
-      component: Contact,
-    },
-    {
-      id: "welcome",
-      title: "Welcome",
-      icon: "https://icon-icons.com/icons2/2506/PNG/512/launchpad_macos_bigsur_icon_150392.png",
-      fallback: "👋",
-      color: "#FF375F",
-      component: Hero,
-    },
-  ];
+  function toggleControlCenter(event) {
+    // Prevent the click from propagating to the global handler immediately
+    if (event) event.stopPropagation();
+    controlCenterVisible = !controlCenterVisible;
+  }
 
-  // Open Welcome window on mount - REMOVED, now handled by boot
-  // import { onMount } from "svelte";
-  // onMount(() => {
-  //   windowStore.openWindow("welcome", "Welcome", Hero, {}, 200, 100);
-  // });
+  function closeControlCenter() {
+    controlCenterVisible = false;
+  }
+
+  // Handle click outside - using window to catch all clicks
+  function handleGlobalClick(e) {
+    // If control center is visible
+    if (controlCenterVisible) {
+      const target = e.target;
+      // Check if click is outside control center AND outside the toggle button
+      if (
+        !target.closest(".control-center") &&
+        !target.closest(".control-center-toggle")
+      ) {
+        closeControlCenter();
+      }
+    }
+  }
 </script>
+
+<svelte:window on:click={handleGlobalClick} />
 
 <main class="desktop">
   {#if !splashComplete}
@@ -101,10 +78,7 @@
 
     <Widget />
 
-    <MenuBar
-      on:toggleControlCenter={() =>
-        (controlCenterVisible = !controlCenterVisible)}
-    />
+    <MenuBar on:toggleControlCenter={toggleControlCenter} />
     <ControlCenter visible={controlCenterVisible} />
 
     <div class="windows-container">
@@ -125,7 +99,7 @@
       {/each}
     </div>
 
-    <Dock {apps} />
+    <Dock apps={dockApps} />
   {/if}
 </main>
 
