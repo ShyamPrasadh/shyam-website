@@ -9,25 +9,30 @@
     let mouseX = null;
     let dockElement;
     let dockRect;
-    let isTouchDevice = false;
+    let touchTimeout = null;
 
     // Optimization: Update rect on resize
     onMount(() => {
-        // Detect touch device
-        isTouchDevice =
-            "ontouchstart" in window || navigator.maxTouchPoints > 0;
-
         const updateRect = () => {
             if (dockElement) dockRect = dockElement.getBoundingClientRect();
         };
         updateRect();
         window.addEventListener("resize", updateRect);
-        return () => window.removeEventListener("resize", updateRect);
+        return () => {
+            window.removeEventListener("resize", updateRect);
+            if (touchTimeout) clearTimeout(touchTimeout);
+        };
     });
 
     function handleAppClick(app) {
         // Reset mouseX on click to prevent stuck magnification
         mouseX = null;
+
+        // Clear any pending timeout
+        if (touchTimeout) {
+            clearTimeout(touchTimeout);
+            touchTimeout = null;
+        }
 
         windowStore.openWindow(
             app.id,
@@ -40,14 +45,23 @@
     }
 
     function handleMouseMove(e) {
-        // Disable magnification on touch devices
-        if (isTouchDevice || !dockRect) return;
+        if (!dockRect) return;
         mouseX = e.clientX - dockRect.left;
     }
 
     function handleTouchMove(e) {
-        // Don't set mouseX on touch devices to prevent magnification
-        return;
+        if (!dockRect || !e.touches[0]) return;
+
+        // Clear any existing timeout
+        if (touchTimeout) clearTimeout(touchTimeout);
+
+        mouseX = e.touches[0].clientX - dockRect.left;
+
+        // Auto-reset after 300ms of no touch movement
+        touchTimeout = setTimeout(() => {
+            mouseX = null;
+            touchTimeout = null;
+        }, 300);
     }
 
     function handleMouseLeave() {
@@ -55,13 +69,17 @@
     }
 
     function handleTouchEnd() {
+        // Clear timeout and reset immediately on touch end
+        if (touchTimeout) {
+            clearTimeout(touchTimeout);
+            touchTimeout = null;
+        }
         mouseX = null;
     }
 
     // Optimized scale calculation
     function getScale(index) {
-        // Disable magnification on touch devices
-        if (isTouchDevice || mouseX === null || !dockRect) return 1;
+        if (mouseX === null || !dockRect) return 1;
 
         // Calculate center based on index and fixed width to avoid layout thrashing
         // Assuming 56px icon + 12px gap + 16px padding
