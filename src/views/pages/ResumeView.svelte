@@ -81,10 +81,18 @@
                 <h2 class="section-title">Certifications</h2>
                 <ul class="cert-list">
                     <li>
-                        DesignBoat UI/UX School - Intensified UI/UX Design
+                        Design Boat UI/UX School - Intensified UI/UX Design
                         Course | Dec 2023
                     </li>
-                    <li>Google UX Design | June 2025</li>
+                    <li>
+                        Google UX Design | June 2025
+                        <a
+                            href="#"
+                            target="_blank"
+                            style="color: var(--accent-color); text-decoration: none;"
+                            >(View)</a
+                        >
+                    </li>
                 </ul>
             </section>
 
@@ -92,12 +100,19 @@
             <section class="section">
                 <h2 class="section-title">Leadership</h2>
                 <div class="leadership-item">
-                    <h3>Student Chairman</h3>
-                    <p class="org">Department of CSE (2022-23)</p>
+                    <h3>Student Chair</h3>
+                    <p class="org">Department of CSE (2022–2023)</p>
                     <ul>
-                        <li>Led 100-member team for national symposium</li>
-                        <li>1,000+ participants from 70 colleges</li>
-                        <li>Managed fundraising and budgeting</li>
+                        <li>
+                            Led a 100-member team to organize a national-level
+                            symposium with 1,000+ participants from 70 colleges,
+                            featuring technical/non-technical events and
+                            workshops
+                        </li>
+                        <li>
+                            Oversaw fundraising, budgeting, and cross-team
+                            coordination for seamless execution and impact
+                        </li>
                     </ul>
                 </div>
             </section>
@@ -115,9 +130,10 @@
                     clean, intuitive, and scalable interfaces grounded in data
                     and design principles. Proficient in Figma and Adobe XD,
                     with real-world experience across user flows, interaction
-                    design, and usability improvements. Focused on creating
-                    impactful experiences that align with and strengthen core
-                    business goals.
+                    design, and usability improvements. Also bring strong
+                    facilitation and team-coordination abilities, gained from
+                    managing complex multi-stakeholder initiatives and ensuring
+                    smooth delivery from planning to execution.
                 </p>
             </section>
 
@@ -127,49 +143,74 @@
 
                 <div class="experience-item">
                     <div class="exp-header">
-                        <h3>Associate Software Engineer</h3>
+                        <h3>UX Designer</h3>
                         <span class="date">Feb 2024 - Present</span>
                     </div>
                     <p class="company">Accenture, Bengaluru</p>
                     <ul>
                         <li>
-                            Collaborated cross-functionally with stakeholders to
-                            conduct user research, create wireframes, and
-                            deliver high-fidelity prototypes aligned with
-                            business goals
+                            Supported enterprise UX initiatives by gathering
+                            requirements, conducting stakeholder interviews, and
+                            translating complex business flows into clear user
+                            journeys and task flows
                         </li>
                         <li>
-                            Trained SAP professional with foundation in SAP
-                            modules
+                            Contributed to large-scale design projects by
+                            creating wireframes, interaction patterns, and UI
+                            components that aligned with established design
+                            systems and client branding guidelines
                         </li>
                         <li>
-                            Currently working on SAP SD (Sales and Distribution)
-                            project, gaining hands-on experience in order
-                            management, pricing, billing, and delivery processes
+                            Collaborated with product owners, developers, and QA
+                            teams to validate feasibility, prepare design
+                            documentation, and ensure smooth handoff through
+                            detailed annotations and interaction specifications
+                        </li>
+                        <li>
+                            Assisted in usability evaluation sessions, captured
+                            user pain points, and proposed design improvements
+                            that enhanced clarity, reduced friction, and
+                            improved overall user satisfaction
+                        </li>
+                        <li>
+                            Worked across multiple agile teams to maintain
+                            consistency, update design libraries, and support
+                            iterative sprints with quick prototypes,
+                            refinements, and stakeholder review materials
                         </li>
                     </ul>
                 </div>
 
                 <div class="experience-item">
                     <div class="exp-header">
-                        <h3>Freelance Designer</h3>
+                        <h3>Product Designer</h3>
                         <span class="date">Dec 2023 - Present</span>
                     </div>
+                    <p class="company">Aatral Engineering</p>
                     <ul>
                         <li>
-                            Delivered end-to-end UX/UI solutions for startups,
-                            covering user research, personas, wireframes, and
-                            high-fidelity prototypes
+                            Designed an end-to-end energy monitoring dashboard
+                            through research, personas, IA, wireframes, and
+                            high-fidelity prototypes. Simplified complex metrics
+                            like energy usage, CO₂ emissions, and peak demand
+                            through clear visual hierarchy
                         </li>
                         <li>
-                            Designed responsive web/mobile interfaces using
-                            Figma and Adobe XD, following usability and
-                            accessibility best practices
+                            Built a responsive, component-based interface system
+                            in Figma with consistent patterns across web and
+                            mobile
                         </li>
                         <li>
-                            Completed 3+ projects including dashboards and
-                            service platforms, improving user experience through
-                            testing and iterative design
+                            Applied usability and accessibility principles to
+                            reduce cognitive load and improve building-to-meter
+                            navigation
+                        </li>
+                        <li>
+                            Created scalable dashboard layouts using minimal,
+                            card-based visualizations for real-time energy
+                            insights. Improved clarity and usability through
+                            iterative reviews and testing, delivering a cleaner,
+                            intuitive data experience
                         </li>
                     </ul>
                 </div>
@@ -186,43 +227,23 @@
                     </div>
                     <ul>
                         <li>
-                            Handled end-to-end product design from research to
-                            polished prototypes across iOS, Android, and Web
+                            Designed the end-to-end product experience across
+                            iOS, Android, and Web — including research,
+                            interviews, competitor analysis, user testing, and
+                            polished high-fidelity prototypes
                         </li>
                         <li>
-                            Conducted interviews, competitor study, and user
-                            testing to identify problems with trust, price
-                            clarity, and flow confusion
+                            Identified key issues around trust, pricing clarity,
+                            and flow friction, then transformed insights into
+                            personas, task flows, feature sets, and complete
+                            information architecture
                         </li>
                         <li>
-                            Built user personas, task flows, feature lists, and
-                            complete information architecture
-                        </li>
-                        <li>
-                            Designed platform-specific layouts:
-                            <ul class="nested-list">
-                                <li>
-                                    <strong>iOS:</strong> Apple's HIG, native tab
-                                    bars, navigation patterns, safe areas
-                                </li>
-                                <li>
-                                    <strong>Android:</strong> Material 3, FAB patterns,
-                                    HCI motion rules, Android-native navigation
-                                </li>
-                                <li>
-                                    <strong>Web:</strong> Responsive grids, desktop-first
-                                    layout, clear content hierarchy
-                                </li>
-                            </ul>
-                        </li>
-                        <li>
-                            Created high-fidelity Figma screens with correct
-                            platform behaviors, transitions, and accessibility
-                            contrast
-                        </li>
-                        <li>
-                            Developed interactive prototypes for all platforms
-                            for stakeholder reviews and developer handoff
+                            Created platform-specific UI systems following Apple
+                            HIG, Material 3, and responsive web standards,
+                            delivering high-fidelity screens with native
+                            behaviours, smooth transitions, and strong
+                            accessibility contrast
                         </li>
                     </ul>
                 </div>
@@ -251,7 +272,7 @@
         text-align: center;
         margin-bottom: 40px;
         padding-bottom: 30px;
-        border-bottom: 3px solid var(--accent-color);
+        border-bottom: 2px solid var(--border-color);
     }
 
     .resume-header h1 {
@@ -268,15 +289,15 @@
     }
 
     .contact-info a {
-        color: var(--accent-color);
+        color: var(--text-color);
         text-decoration: none;
         transition: color 0.2s;
+        font-weight: 500;
     }
 
     .contact-info a:hover {
-        color: var(--accent-color);
+        color: var(--text-secondary);
         text-decoration: underline;
-        opacity: 0.8;
     }
 
     .separator {
@@ -296,7 +317,7 @@
         background: var(--sidebar-bg);
         padding: 30px;
         border-radius: 8px;
-        border-left: 4px solid var(--accent-color);
+        border-left: 3px solid var(--text-color);
         transition: background 0.3s;
     }
 
@@ -313,11 +334,11 @@
     .section-title {
         font-size: 20px;
         font-weight: 700;
-        color: var(--accent-color);
+        color: var(--text-color);
         margin: 0 0 16px 0;
         text-transform: uppercase;
         letter-spacing: 0.5px;
-        border-bottom: 2px solid var(--accent-color);
+        border-bottom: 2px solid var(--border-color);
         padding-bottom: 8px;
     }
 
@@ -351,7 +372,7 @@
         content: "•";
         position: absolute;
         left: 0;
-        color: var(--accent-color);
+        color: var(--text-secondary);
         font-weight: bold;
     }
 
@@ -399,7 +420,7 @@
         content: "✓";
         position: absolute;
         left: 0;
-        color: var(--accent-color);
+        color: var(--text-secondary);
         font-weight: bold;
     }
 
@@ -435,7 +456,7 @@
         content: "→";
         position: absolute;
         left: 0;
-        color: var(--accent-color);
+        color: var(--text-secondary);
     }
 
     /* Summary */
@@ -467,7 +488,7 @@
 
     .exp-header .date {
         font-size: 13px;
-        color: var(--accent-color);
+        color: var(--text-secondary);
         font-weight: 500;
     }
 
@@ -496,7 +517,7 @@
         content: "▸";
         position: absolute;
         left: 0;
-        color: var(--accent-color);
+        color: var(--text-secondary);
         font-weight: bold;
     }
 
@@ -521,7 +542,7 @@
 
     .project-header .date {
         font-size: 13px;
-        color: var(--accent-color);
+        color: var(--text-secondary);
         font-weight: 500;
     }
 
@@ -543,7 +564,7 @@
         content: "▸";
         position: absolute;
         left: 0;
-        color: var(--accent-color);
+        color: var(--text-secondary);
         font-weight: bold;
     }
 

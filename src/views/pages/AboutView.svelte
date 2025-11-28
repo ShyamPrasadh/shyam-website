@@ -53,16 +53,16 @@
             title: "Professional Journey",
             items: [
                 {
-                    role: "Associate Software Engineer",
+                    role: "UX Designer",
                     org: "Accenture",
                     date: "Feb 2024 – Present",
-                    desc: "UX Research & High-fidelity Prototyping",
+                    desc: "Enterprise UX, Stakeholder Collaboration & Design Systems",
                 },
                 {
-                    role: "Freelance Designer",
-                    org: "Self-Employed",
+                    role: "Product Designer",
+                    org: "Aatral Engineering",
                     date: "Dec 2023 – Present",
-                    desc: "End-to-end Product Design for Startups",
+                    desc: "Energy Monitoring Dashboard & Component Systems",
                 },
             ],
             icon: "💼",
