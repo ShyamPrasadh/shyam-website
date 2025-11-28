@@ -666,7 +666,14 @@
 
     .input-area {
         padding: 16px;
+        padding-bottom: 90px; /* Add space for Dock */
         background: var(--window-bg);
+    }
+
+    @media (max-width: 768px) {
+        .input-area {
+            padding-bottom: 100px; /* More space on mobile for safe area/dock */
+        }
     }
 
     .input-wrapper {

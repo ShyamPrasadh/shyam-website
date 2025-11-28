@@ -96,6 +96,10 @@
 
     // 3D Tilt Action
     function tilt(node, { max = 10, scale = 1.05, glare = true } = {}) {
+        // Check if mobile/touch device
+        const isMobile = window.matchMedia("(max-width: 768px)").matches;
+        if (isMobile) return; // Disable tilt on mobile
+
         const content = node.querySelector(".card-content-wrapper");
         const glareEl = node.querySelector(".glare");
 
@@ -167,7 +171,7 @@
                     class="journey-card-wrapper {i % 2 === 0
                         ? 'left'
                         : 'right'}"
-                    in:fly={{ y: 100, duration: 1000, delay: 0 }}
+                    in:fly={{ y: 50, duration: 800, delay: 0 }}
                 >
                     <!-- Dot on the line -->
                     <div class="timeline-dot-wrapper">
@@ -505,32 +509,63 @@
 
     /* Mobile Responsive */
     @media (max-width: 768px) {
+        .ios-journey {
+            padding: 20px 16px;
+        }
+
+        .header {
+            margin-bottom: 40px;
+        }
+
+        .title {
+            font-size: 32px;
+        }
+
         .line-container {
-            left: 24px;
+            left: 20px;
             transform: none;
         }
 
         .timeline-dot-wrapper {
-            left: 24px;
+            left: 20px;
             transform: translateX(-50%);
         }
 
         .journey-card-wrapper {
             justify-content: flex-end;
+            margin-bottom: 40px;
         }
 
         .card-perspective {
-            width: calc(100% - 60px);
-            margin-left: 60px !important;
+            width: calc(100% - 50px);
+            margin-left: 50px !important;
             margin-right: 0 !important;
         }
 
         .ios-card {
             padding: 20px;
+            /* Reset 3D transforms for mobile */
+            transform: none !important;
         }
 
-        .title {
-            font-size: 36px;
+        .card-header {
+            flex-direction: column;
+            gap: 12px;
+            transform: none !important;
+        }
+
+        .icon-box {
+            width: 40px;
+            height: 40px;
+        }
+
+        .date-badge {
+            align-self: flex-start;
+        }
+
+        .card-body,
+        .card-footer {
+            transform: none !important;
         }
     }
 </style>
