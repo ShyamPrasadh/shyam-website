@@ -32,11 +32,24 @@
     <div class="left">
         <div class="apple-logo"></div>
         <div class="menu-item font-bold">Shyam Portfolio</div>
-        <div class="menu-item">File</div>
-        <div class="menu-item">Edit</div>
-        <div class="menu-item">View</div>
-        <div class="menu-item">Window</div>
-        <div class="menu-item">Help</div>
+        <a
+            href="https://www.behance.net/shyamprasadh"
+            target="_blank"
+            class="menu-item link">Behance</a
+        >
+        <a
+            href="https://www.linkedin.com/in/shyamprasadh"
+            target="_blank"
+            class="menu-item link">LinkedIn</a
+        >
+        <a href="mailto:shyamprasadh247@gmail.com" class="menu-item link"
+            >Mail</a
+        >
+        <a
+            href="https://instagram.com/shyam_ux"
+            target="_blank"
+            class="menu-item link">Instagram</a
+        >
     </div>
     <div class="right">
         <div
@@ -81,6 +94,12 @@
     .menu-item {
         cursor: default;
         opacity: 0.9;
+        text-decoration: none;
+        color: inherit;
+    }
+
+    .menu-item.link {
+        cursor: pointer;
     }
 
     .menu-item:hover {

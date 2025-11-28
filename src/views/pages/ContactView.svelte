@@ -666,13 +666,18 @@
 
     .input-area {
         padding: 16px;
-        padding-bottom: 90px; /* Add space for Dock */
         background: var(--window-bg);
     }
 
+    /* Only add extra padding when window is maximized (to clear Dock) */
+    :global(.window.maximized) .input-area {
+        padding-bottom: 90px;
+    }
+
     @media (max-width: 768px) {
+        /* On mobile, window is effectively always maximized/full screen */
         .input-area {
-            padding-bottom: 100px; /* More space on mobile for safe area/dock */
+            padding-bottom: 100px;
         }
     }
 

@@ -3,6 +3,7 @@
     import { fade, slide } from "svelte/transition";
     import { writable } from "svelte/store";
     import { windowStore } from "../../lib/stores/windowStore";
+    import { ThemeController } from "../../controllers/ThemeController";
 
     export let visible = false;
 
@@ -19,15 +20,11 @@
     let volume = 80;
 
     // Dark mode state
-    let isDarkMode = false;
+    let isDarkMode = ThemeController.isDarkMode();
 
     function toggleDarkMode() {
-        isDarkMode = !isDarkMode;
-        if (isDarkMode) {
-            document.documentElement.setAttribute("data-theme", "dark");
-        } else {
-            document.documentElement.removeAttribute("data-theme");
-        }
+        ThemeController.toggleTheme();
+        isDarkMode = ThemeController.isDarkMode();
     }
 
     function toggleMaximizeWindows() {
