@@ -17,6 +17,7 @@
   import SplashScreen from "./views/os/SplashScreen.svelte";
   import BootScreen from "./views/os/BootScreen.svelte";
   import ControlCenter from "./views/os/ControlCenter.svelte";
+  import SplashCursor from "./views/components/SplashCursor.svelte";
 
   let splashComplete = false;
   let booted = false;
@@ -75,6 +76,8 @@
     <BootScreen on:complete={handleBootComplete} />
   {:else}
     <div class="wallpaper" in:fade={{ duration: 1000 }}></div>
+
+    <SplashCursor />
 
     <Widget />
 
