@@ -33,7 +33,7 @@
         <div class="apple-logo"></div>
         <div class="menu-item font-bold">Shyam Portfolio</div>
         <a
-            href="https://www.behance.net/shyamprasadh"
+            href="https://www.behance.net/shyampsathyan"
             target="_blank"
             class="menu-item link">Behance</a
         >
@@ -46,9 +46,14 @@
             >Mail</a
         >
         <a
-            href="https://instagram.com/shyam_ux"
+            href="https://www.instagram.com/theshyamprasadh/"
             target="_blank"
             class="menu-item link">Instagram</a
+        >
+        <a
+            href="https://wa.me/9360975040"
+            target="_blank"
+            class="menu-item link">WhatsApp</a
         >
     </div>
     <div class="right">

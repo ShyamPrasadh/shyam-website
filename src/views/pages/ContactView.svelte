@@ -25,10 +25,10 @@
     // Contact Details
     const contactDetails = {
         name: "Shyam Prasadh",
-        mobile: "+91 98410 99104",
+        mobile: "+91 93609 75040",
         email: "shyamprasadh247@gmail.com",
         linkedin: "linkedin.com/in/shyamprasadh",
-        instagram: "@shyam_ux",
+        instagram: "@theshyamprasadh",
     };
 
     function scrollToBottom() {
