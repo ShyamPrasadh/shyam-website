@@ -187,6 +187,7 @@
         overflow: auto;
         position: relative;
         background: #fff;
+        padding-bottom: 30px; /* Minimal padding to prevent abrupt cutoff */
     }
 
     /* Mobile Responsive Styles */

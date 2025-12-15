@@ -3,16 +3,15 @@ const THEME_KEY = 'portfolio-theme';
 
 export class ThemeController {
     /**
-     * Initialize theme from localStorage or system preference
+     * Initialize theme from localStorage or default to dark mode
      */
     static initTheme() {
         const savedTheme = localStorage.getItem(THEME_KEY);
         if (savedTheme) {
             this.setTheme(savedTheme);
         } else {
-            // Check system preference
-            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-            this.setTheme(prefersDark ? 'dark' : 'light');
+            // Default to dark mode
+            this.setTheme('dark');
         }
     }
 
