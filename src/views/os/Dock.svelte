@@ -2,6 +2,7 @@
     import { windowStore } from "../../lib/stores/windowStore";
     import { createEventDispatcher, onMount } from "svelte";
     import { spring } from "svelte/motion";
+    import { fly } from "svelte/transition";
 
     export let apps = [];
 
@@ -104,53 +105,55 @@
     }
 </script>
 
-<div class="dock-container">
-    <div
-        class="dock"
-        bind:this={dockElement}
-        on:mousemove={handleMouseMove}
-        on:mouseleave={handleMouseLeave}
-        on:touchmove|nonpassive={handleTouchMove}
-        on:touchend={handleTouchEnd}
-        role="toolbar"
-        aria-label="Applications Dock"
-        tabindex="0"
-    >
-        {#each apps as app, i}
-            <!-- svelte-ignore a11y-click-events-have-key-events -->
-            <!-- svelte-ignore a11y-no-static-element-interactions -->
-            <div
-                class="dock-item"
-                on:click={() => handleAppClick(app)}
-                role="button"
-                tabindex="0"
-            >
+{#if $windowStore.dockVisible}
+    <div class="dock-container" transition:fly={{ y: 100, duration: 300 }}>
+        <div
+            class="dock"
+            bind:this={dockElement}
+            on:mousemove={handleMouseMove}
+            on:mouseleave={handleMouseLeave}
+            on:touchmove|nonpassive={handleTouchMove}
+            on:touchend={handleTouchEnd}
+            role="toolbar"
+            aria-label="Applications Dock"
+            tabindex="0"
+        >
+            {#each apps as app, i}
+                <!-- svelte-ignore a11y-click-events-have-key-events -->
+                <!-- svelte-ignore a11y-no-static-element-interactions -->
                 <div
-                    class="icon"
-                    style="transform: scale({getScale(
-                        i,
-                    )}) translateY({mouseX !== null && getScale(i) > 1
-                        ? -((getScale(i) - 1) * 30)
-                        : 0}px);"
+                    class="dock-item"
+                    on:click={() => handleAppClick(app)}
+                    role="button"
+                    tabindex="0"
                 >
-                    {#if app.icon && (app.icon.startsWith("http") || app.icon.startsWith("/") || app.icon.includes("import.meta"))}
-                        <img
-                            src={app.icon}
-                            alt={app.title}
-                            class="icon-img"
-                            data-app-id={app.id}
-                        />
-                    {:else}
-                        <span class="fallback-icon"
-                            >{app.icon || app.fallback}</span
-                        >
-                    {/if}
+                    <div
+                        class="icon"
+                        style="transform: scale({getScale(
+                            i,
+                        )}) translateY({mouseX !== null && getScale(i) > 1
+                            ? -((getScale(i) - 1) * 30)
+                            : 0}px);"
+                    >
+                        {#if app.icon && (app.icon.startsWith("http") || app.icon.startsWith("/") || app.icon.includes("import.meta"))}
+                            <img
+                                src={app.icon}
+                                alt={app.title}
+                                class="icon-img"
+                                data-app-id={app.id}
+                            />
+                        {:else}
+                            <span class="fallback-icon"
+                                >{app.icon || app.fallback}</span
+                            >
+                        {/if}
+                    </div>
+                    <span class="tooltip">{app.title}</span>
                 </div>
-                <span class="tooltip">{app.title}</span>
-            </div>
-        {/each}
+            {/each}
+        </div>
     </div>
-</div>
+{/if}
 
 <style>
     .dock-container {

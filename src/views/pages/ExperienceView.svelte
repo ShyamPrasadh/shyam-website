@@ -149,7 +149,9 @@
 
 <section id="journey" class="ios-journey">
     <div class="header">
-        <h2 class="title" in:fade={{ duration: 800 }}>Journey</h2>
+        <h2 class="title" in:fade={{ duration: 800 }}>
+            <span class="gradient-text">Journey</span>
+        </h2>
         <p class="subtitle" in:fade={{ duration: 800, delay: 200 }}>
             A timeline of growth & impact
         </p>
@@ -243,14 +245,11 @@
     }
 
     .title {
-        font-size: 48px;
+        font-size: 3rem;
         font-weight: 800;
-        letter-spacing: -0.03em;
-        margin-bottom: 8px;
-        background: linear-gradient(135deg, #1d1d1f 0%, #434343 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        text-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        letter-spacing: -0.02em;
+        margin-bottom: 0.5rem;
+        /* Gradient handled by .gradient-text span */
     }
 
     .subtitle {

@@ -208,12 +208,7 @@
         margin-right: auto;
     }
 
-    .section-title {
-        font-size: 3rem;
-        font-weight: 800;
-        margin-bottom: 0.5rem;
-        letter-spacing: -0.02em;
-    }
+    /* .section-title is now global in app.css */
 
     .section-desc {
         font-size: 1.1rem;

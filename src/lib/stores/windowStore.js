@@ -4,7 +4,8 @@ function createWindowStore() {
     const { subscribe, update } = writable({
         windows: [],
         activeWindowId: null,
-        zIndexCounter: 100
+        zIndexCounter: 100,
+        dockVisible: true
     });
 
     return {
@@ -113,7 +114,9 @@ function createWindowStore() {
                     maximized: enabled
                 }))
             };
-        })
+        }),
+
+        toggleDock: (visible) => update(state => ({ ...state, dockVisible: visible }))
     };
 }
 

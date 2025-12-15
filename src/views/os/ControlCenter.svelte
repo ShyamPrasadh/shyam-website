@@ -10,7 +10,14 @@
     // State for toggles
     let wifi = true;
     let bluetooth = true;
-    let airdrop = true;
+
+    // Dock visibility
+    let dockVisible = true;
+    $: dockVisible = $windowStore.dockVisible;
+
+    function toggleDock() {
+        windowStore.toggleDock(!dockVisible);
+    }
 
     // Maximize windows toggle - stored in localStorage
     let maximizeWindows = localStorage.getItem("maximizeWindows") === "true";
@@ -108,31 +115,50 @@
                 <div class="toggle-row">
                     <button
                         type="button"
-                        class="toggle-btn {airdrop ? 'active' : ''}"
-                        on:click={() => (airdrop = !airdrop)}
+                        class="toggle-btn {!dockVisible ? 'active' : ''}"
+                        on:click={toggleDock}
                     >
                         <div class="icon-circle">
-                            <svg
-                                width="16"
-                                height="16"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                stroke-width="2.5"
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                            >
-                                <path
-                                    d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"
-                                ></path>
-                                <path d="m8 12 4 4 4-4"></path>
-                                <path d="M12 8v8"></path>
-                            </svg>
+                            {#if !dockVisible}
+                                <!-- Eye Off Icon (Hidden) -->
+                                <svg
+                                    width="16"
+                                    height="16"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="2.5"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                >
+                                    <path
+                                        d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"
+                                    ></path>
+                                    <line x1="1" y1="1" x2="23" y2="23"></line>
+                                </svg>
+                            {:else}
+                                <!-- Eye Icon (Visible) -->
+                                <svg
+                                    width="16"
+                                    height="16"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="2.5"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                >
+                                    <path
+                                        d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"
+                                    ></path>
+                                    <circle cx="12" cy="12" r="3"></circle>
+                                </svg>
+                            {/if}
                         </div>
                         <div class="label">
-                            <span class="title">AirDrop</span>
+                            <span class="title">Hide Dock</span>
                             <span class="status"
-                                >{airdrop ? "Contacts Only" : "Off"}</span
+                                >{!dockVisible ? "On" : "Off"}</span
                             >
                         </div>
                     </button>
@@ -377,6 +403,14 @@
 
     :global([data-theme="dark"]) .toggle-btn:hover {
         background: rgba(255, 255, 255, 0.1);
+    }
+
+    :global([data-theme="dark"]) .toggle-btn {
+        color: white;
+    }
+
+    :global([data-theme="dark"]) .label {
+        color: white;
     }
 
     .icon-circle {
