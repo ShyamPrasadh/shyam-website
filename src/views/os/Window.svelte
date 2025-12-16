@@ -184,7 +184,7 @@
         flex: 1;
         overflow: auto;
         position: relative;
-        background: #fff;
+        background: var(--bg-color);
         padding-bottom: 30px; /* Minimal padding to prevent abrupt cutoff */
     }
 
@@ -230,9 +230,5 @@
 
     :global([data-theme="dark"]) .title {
         color: #e8e8e8;
-    }
-
-    :global([data-theme="dark"]) .content {
-        background: var(--card-bg);
     }
 </style>

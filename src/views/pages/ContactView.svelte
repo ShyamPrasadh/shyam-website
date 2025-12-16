@@ -411,7 +411,6 @@
         border-right: 1px solid var(--border-color);
         display: flex;
         flex-direction: column;
-        background: rgba(var(--sidebar-bg), 0.5);
         backdrop-filter: blur(20px);
     }
 
@@ -732,9 +731,9 @@
         right: 10px;
         width: 300px;
         background: rgba(
-            30,
-            30,
-            30,
+            0,
+            0,
+            0,
             0.95
         ); /* Dark background by default for popover */
         backdrop-filter: blur(20px);

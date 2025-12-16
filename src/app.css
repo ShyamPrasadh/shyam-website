@@ -24,18 +24,18 @@
 
 [data-theme="dark"] {
     /* Dark Mode Colors */
-    --bg-color: #1c1c1e;
+    --bg-color: #000000;
     /* Unified dark background */
     --text-primary: #ffffff;
     --text-color: #ffffff;
     --text-secondary: #86868b;
     --sidebar-bg: #1c1c1e;
-    --card-bg: #2c2c2e;
+    --card-bg: #1c1c1e;
     /* Slightly lighter for cards */
     --border-color: #38383a;
     --accent-color: #0a84ff;
     --accent-hover: #409CFF;
-    --window-bg: #1c1c1e;
+    --window-bg: #000000;
     /* Solid background for windows in dark mode */
     --dock-bg: rgba(28, 28, 30, 0.8);
     --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
