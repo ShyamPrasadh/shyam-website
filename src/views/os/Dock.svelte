@@ -1,6 +1,7 @@
 <script>
     import { windowStore } from "../../lib/stores/windowStore";
-    import { createEventDispatcher, onMount } from "svelte";
+    import { dockStore } from "../../lib/stores/dockStore";
+    import { createEventDispatcher, onMount, tick } from "svelte";
     import { spring } from "svelte/motion";
     import { fly } from "svelte/transition";
 
@@ -11,12 +12,47 @@
     let dockElement;
     let dockRect;
     let touchTimeout = null;
+    let iconElements = {};
+    let bouncing = {};
+    let previousWindows = [];
+
+    // Watch for window minimization to trigger bounce
+    $: {
+        if ($windowStore.windows) {
+            $windowStore.windows.forEach((win) => {
+                const prev = previousWindows.find((p) => p.id === win.id);
+                if (prev && !prev.minimized && win.minimized) {
+                    triggerBounce(win.id);
+                }
+            });
+            previousWindows = $windowStore.windows.map((w) => ({ ...w }));
+        }
+    }
+
+    function triggerBounce(id) {
+        bouncing = { ...bouncing, [id]: true };
+        setTimeout(() => {
+            bouncing = { ...bouncing, [id]: false };
+        }, 120);
+    }
 
     // Optimization: Update rect on resize
     onMount(() => {
-        const updateRect = () => {
+        const updateRect = async () => {
             if (dockElement) dockRect = dockElement.getBoundingClientRect();
+
+            // Update icon positions in store
+            await tick(); // Wait for any layout shifts
+            Object.entries(iconElements).forEach(([id, el]) => {
+                if (el) {
+                    dockStore.updateIconPosition(
+                        id,
+                        el.getBoundingClientRect(),
+                    );
+                }
+            });
         };
+
         updateRect();
         window.addEventListener("resize", updateRect);
         return () => {
@@ -128,10 +164,13 @@
                     tabindex="0"
                 >
                     <div
-                        class="icon"
-                        style="transform: scale({getScale(
-                            i,
-                        )}) translateY({mouseX !== null && getScale(i) > 1
+                        class="icon {bouncing[app.id] ? 'bouncing' : ''}"
+                        bind:this={iconElements[app.id]}
+                        style="transform: scale({getScale(i) *
+                            (bouncing[app.id]
+                                ? 1.06
+                                : 1)}) translateY({mouseX !== null &&
+                        getScale(i) > 1
                             ? -((getScale(i) - 1) * 30)
                             : 0}px);"
                     >

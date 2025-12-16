@@ -1,7 +1,9 @@
 <script>
     import { draggable } from "../../lib/actions/draggable";
     import { windowStore } from "../../lib/stores/windowStore";
-    import { fade, scale } from "svelte/transition";
+    import { fade } from "svelte/transition";
+    import { genie } from "../../lib/transitions/genie";
+    import { cubicOut } from "svelte/easing";
 
     export let id;
     export let title;
@@ -37,10 +39,6 @@
     function handleMaximize() {
         windowStore.toggleMaximize(id);
     }
-
-    $: {
-        console.log(`[Window ${id}] Maximize prop: ${maximized}`);
-    }
 </script>
 
 {#if !minimized}
@@ -54,7 +52,7 @@
             onDragStart: handleFocus,
         }}
         on:mousedown={handleFocus}
-        transition:scale={{ duration: 200, start: 0.95, opacity: 0 }}
+        transition:genie={{ duration: 500, id, easing: cubicOut }}
         bind:this={windowElement}
     >
         <div class="title-bar" on:dblclick={handleMaximize}>
