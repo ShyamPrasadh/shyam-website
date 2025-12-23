@@ -108,16 +108,23 @@
     function handleMouseMove(e) {
         if (!widgetElement || isDragging) return;
 
+        const clientX = e.type.includes("touch")
+            ? e.touches[0].clientX
+            : e.clientX;
+        const clientY = e.type.includes("touch")
+            ? e.touches[0].clientY
+            : e.clientY;
+
         const rect = widgetElement.getBoundingClientRect();
         const centerX = rect.left + rect.width / 2;
         const centerY = rect.top + rect.height / 2;
 
-        const deltaX = e.clientX - centerX;
-        const deltaY = e.clientY - centerY;
+        const deltaX = clientX - centerX;
+        const deltaY = clientY - centerY;
 
         // Tilt effect (max 20 degrees)
         const maxTilt = 20;
-        const maxDistance = 500;
+        const maxDistance = isMobile() ? 200 : 500;
 
         tiltY = Math.min(
             Math.max((deltaX / maxDistance) * maxTilt, -maxTilt),
@@ -219,18 +226,20 @@
     }
 
     function animate() {
-        // On mobile, CSS handles positioning
-        if (!isMobile() && !isDragging) {
-            // Smooth movement towards target
+        // Smooth movement towards target
+        if (!isDragging) {
             const dx = targetX - posX;
             const dy = targetY - posY;
 
-            posX += dx * 0.02;
-            posY += dy * 0.02;
+            // Faster movement on mobile for better feel
+            const speed = isMobile() ? 0.05 : 0.02;
+            posX += dx * speed;
+            posY += dy * speed;
 
             // Clamp position
-            posX = Math.max(8, Math.min(92, posX));
-            posY = Math.max(12, Math.min(70, posY));
+            const margin = isMobile() ? 5 : 8;
+            posX = Math.max(margin, Math.min(100 - margin, posX));
+            posY = Math.max(margin, Math.min(100 - margin, posY));
         }
 
         animationFrame = requestAnimationFrame(animate);
@@ -285,8 +294,17 @@
 
     onMount(() => {
         window.addEventListener("mousemove", handleMouseMove);
+        window.addEventListener("touchmove", handleMouseMove, {
+            passive: true,
+        });
 
-        // Subscribe to window store
+        // Set initial mobile position
+        if (isMobile()) {
+            posX = 85;
+            posY = 80;
+            targetX = 85;
+            targetY = 80;
+        }
         unsubscribe = windowStore.subscribe(checkWindows);
 
         // Initial wave
@@ -319,6 +337,7 @@
 
     onDestroy(() => {
         window.removeEventListener("mousemove", handleMouseMove);
+        window.removeEventListener("touchmove", handleMouseMove);
         if (unsubscribe) unsubscribe();
         clearInterval(waveInterval);
         clearInterval(messageInterval);
@@ -588,13 +607,7 @@
     /* Mobile Responsive - Smaller widget for mobile */
     @media (max-width: 768px) {
         .widget-container {
-            /* Position at bottom right, above the dock */
-            position: fixed;
-            left: auto !important;
-            right: 16px;
-            top: auto !important;
-            bottom: 90px; /* Above the dock */
-            transform: none;
+            /* Remove fixed positioning to allow dragging */
             z-index: 50;
         }
 

@@ -116,8 +116,6 @@
 
     .cursor {
         display: inline-block;
-        width: 2px;
-        background-color: currentColor;
         margin-left: 2px;
         animation: blink 1s step-end infinite;
     }
