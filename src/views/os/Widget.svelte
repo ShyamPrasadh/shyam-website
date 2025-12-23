@@ -1,236 +1,600 @@
 <script>
-    import { draggable } from "../../lib/actions/draggable";
+    import { onMount, onDestroy } from "svelte";
+    import { windowStore } from "../../lib/stores/windowStore";
 
-    let isHovering = false;
     const base = import.meta.env.BASE_URL;
 
-    // Using emojis for now, could be replaced with images
-    const skills = [
-        { icon: "🔍", label: "Research", color: "#FF375F" },
-        { icon: "🎨", label: "Design", color: "#0A84FF" },
-        { icon: "🧠", label: "Strategy", color: "#BF5AF2" },
-        { icon: "🗣️", label: "People", color: "#30D158" },
-        { icon: "⚡", label: "Leadership", color: "#FF9F0A" },
+    // Speech bubble messages - friendly greetings
+    const greetings = [
+        "Hey there! 👋",
+        "Hi! Welcome!",
+        "Hello friend! ✨",
+        "Nice to see you!",
+        "Let's explore!",
     ];
+
+    const messages = [
+        "I'm Shyam, a UX Designer",
+        "Click the dock to explore!",
+        "Hover over me! 😊",
+        "Try dragging me around!",
+        "Turning ideas into products ✨",
+        "Let's design something cool!",
+    ];
+
+    // Expressions
+    const expressions = {
+        default: "happy.png",
+        waving: "hugging.png", // Arms out = waving feel
+        left: "winking.png",
+        right: "grinning.png",
+        top: "star_eye.png",
+        bottom: "thinking.png",
+        hover: "lovely.png",
+        click: "victory.png",
+        happy: "happy_winking.png",
+    };
+
+    let currentExpression = expressions.waving;
+    let currentMessage = greetings[0];
+    let messageIndex = 0;
+    let showBubble = true;
+    let isWaving = true;
+
+    // Position state
+    let posX = 85; // Start on right side (percentage)
+    let posY = 40;
+    let targetX = 85;
+    let targetY = 40;
+
+    // Track if windows are open
+    let hasActiveWindows = false;
+    let unsubscribe;
+
+    // Cursor tracking
+    let tiltX = 0;
+    let tiltY = 0;
+
+    // Animation
+    let animationFrame;
+    let waveInterval;
+    let messageInterval;
+    let moveInterval;
+
+    // Element reference
+    let widgetElement;
+    let isHovering = false;
+    let isDragging = false;
+
+    // Subscribe to window store to know when windows are open
+    function checkWindows(state) {
+        const visibleWindows = state.windows.filter((w) => !w.minimized);
+        hasActiveWindows = visibleWindows.length > 0;
+
+        if (hasActiveWindows) {
+            // Position on the side when windows are open
+            // Check if there's more space on left or right
+            const windowData = visibleWindows[0];
+            if (windowData) {
+                const windowCenterX =
+                    windowData.x + (windowData.width || 800) / 2;
+                const screenCenter = window.innerWidth / 2;
+
+                // Go to opposite side of the window
+                if (windowCenterX < screenCenter) {
+                    // Window is on left, go to right
+                    targetX = 88;
+                    targetY = 35;
+                } else {
+                    // Window is on right, go to left
+                    targetX = 12;
+                    targetY = 35;
+                }
+            }
+        } else {
+            // No windows - float freely in center-ish area
+            pickNewTarget();
+        }
+    }
+
+    function handleMouseMove(e) {
+        if (!widgetElement || isDragging) return;
+
+        const rect = widgetElement.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+
+        const deltaX = e.clientX - centerX;
+        const deltaY = e.clientY - centerY;
+
+        // Tilt effect (max 20 degrees)
+        const maxTilt = 20;
+        const maxDistance = 500;
+
+        tiltY = Math.min(
+            Math.max((deltaX / maxDistance) * maxTilt, -maxTilt),
+            maxTilt,
+        );
+        tiltX = Math.min(
+            Math.max(-(deltaY / maxDistance) * maxTilt, -maxTilt),
+            maxTilt,
+        );
+
+        // Change expression based on cursor direction (when not waving)
+        if (!isHovering && !isWaving) {
+            const angle = Math.atan2(deltaY, deltaX) * (180 / Math.PI);
+            if (angle > -45 && angle <= 45) {
+                currentExpression = expressions.right;
+            } else if (angle > 45 && angle <= 135) {
+                currentExpression = expressions.bottom;
+            } else if (angle > -135 && angle <= -45) {
+                currentExpression = expressions.top;
+            } else {
+                currentExpression = expressions.left;
+            }
+        }
+    }
+
+    function handleClick() {
+        currentExpression = expressions.click;
+        currentMessage = "Yay! You clicked me! 🎉";
+        showBubble = true;
+        isWaving = false;
+
+        setTimeout(() => {
+            currentExpression = expressions.default;
+            cycleMessage();
+        }, 2000);
+    }
+
+    function handleMouseEnter() {
+        isHovering = true;
+        isWaving = false;
+        currentExpression = expressions.hover;
+        currentMessage = "Hey you! 💖";
+        showBubble = true;
+    }
+
+    function handleMouseLeave() {
+        isHovering = false;
+        currentExpression = expressions.default;
+        tiltX = 0;
+        tiltY = 0;
+    }
+
+    function cycleMessage() {
+        if (isWaving) {
+            messageIndex = (messageIndex + 1) % greetings.length;
+            currentMessage = greetings[messageIndex];
+        } else {
+            messageIndex = (messageIndex + 1) % messages.length;
+            currentMessage = messages[messageIndex];
+        }
+    }
+
+    function doWave() {
+        // Wave animation - alternate expressions
+        isWaving = true;
+        currentExpression = expressions.waving;
+        currentMessage =
+            greetings[Math.floor(Math.random() * greetings.length)];
+        showBubble = true;
+
+        setTimeout(() => {
+            if (!isHovering) {
+                currentExpression = expressions.happy;
+            }
+        }, 800);
+
+        setTimeout(() => {
+            if (!isHovering) {
+                currentExpression = expressions.waving;
+            }
+        }, 1200);
+
+        setTimeout(() => {
+            isWaving = false;
+            if (!isHovering) {
+                currentExpression = expressions.default;
+            }
+        }, 2000);
+    }
+
+    function pickNewTarget() {
+        if (hasActiveWindows) return; // Don't random move when windows open
+
+        // Random position within bounds
+        targetX = 15 + Math.random() * 70;
+        targetY = 20 + Math.random() * 45;
+    }
+
+    function animate() {
+        if (!isDragging) {
+            // Smooth movement towards target
+            const dx = targetX - posX;
+            const dy = targetY - posY;
+
+            posX += dx * 0.02;
+            posY += dy * 0.02;
+
+            // Clamp position
+            posX = Math.max(8, Math.min(92, posX));
+            posY = Math.max(12, Math.min(70, posY));
+        }
+
+        animationFrame = requestAnimationFrame(animate);
+    }
+
+    // Drag functionality
+    let dragStartX, dragStartY;
+
+    function startDrag(e) {
+        isDragging = true;
+        const clientX = e.type.includes("touch")
+            ? e.touches[0].clientX
+            : e.clientX;
+        const clientY = e.type.includes("touch")
+            ? e.touches[0].clientY
+            : e.clientY;
+        dragStartX = clientX - (posX / 100) * window.innerWidth;
+        dragStartY = clientY - (posY / 100) * window.innerHeight;
+
+        window.addEventListener("mousemove", onDrag);
+        window.addEventListener("mouseup", stopDrag);
+        window.addEventListener("touchmove", onDrag);
+        window.addEventListener("touchend", stopDrag);
+    }
+
+    function onDrag(e) {
+        if (!isDragging) return;
+        const clientX = e.type.includes("touch")
+            ? e.touches[0].clientX
+            : e.clientX;
+        const clientY = e.type.includes("touch")
+            ? e.touches[0].clientY
+            : e.clientY;
+
+        posX = ((clientX - dragStartX) / window.innerWidth) * 100;
+        posY = ((clientY - dragStartY) / window.innerHeight) * 100;
+
+        posX = Math.max(8, Math.min(92, posX));
+        posY = Math.max(12, Math.min(70, posY));
+
+        targetX = posX;
+        targetY = posY;
+    }
+
+    function stopDrag() {
+        isDragging = false;
+        window.removeEventListener("mousemove", onDrag);
+        window.removeEventListener("mouseup", stopDrag);
+        window.removeEventListener("touchmove", onDrag);
+        window.removeEventListener("touchend", stopDrag);
+    }
+
+    onMount(() => {
+        window.addEventListener("mousemove", handleMouseMove);
+
+        // Subscribe to window store
+        unsubscribe = windowStore.subscribe(checkWindows);
+
+        // Initial wave
+        setTimeout(doWave, 1000);
+
+        // Wave periodically (every 15 seconds)
+        waveInterval = setInterval(() => {
+            if (!isHovering && !isDragging) {
+                doWave();
+            }
+        }, 15000);
+
+        // Cycle messages every 5 seconds
+        messageInterval = setInterval(() => {
+            if (!isHovering && !isWaving) {
+                cycleMessage();
+            }
+        }, 5000);
+
+        // Pick new movement target every 10 seconds (only when no windows)
+        moveInterval = setInterval(() => {
+            if (!hasActiveWindows && !isDragging) {
+                pickNewTarget();
+            }
+        }, 10000);
+
+        // Start animation loop
+        animate();
+    });
+
+    onDestroy(() => {
+        window.removeEventListener("mousemove", handleMouseMove);
+        if (unsubscribe) unsubscribe();
+        clearInterval(waveInterval);
+        clearInterval(messageInterval);
+        clearInterval(moveInterval);
+        cancelAnimationFrame(animationFrame);
+    });
 </script>
 
-<div class="widget-container" use:draggable={{ handle: ".memoji-center" }}>
-    <div class="orbit-system">
-        <!-- Central Memoji -->
-        <div
-            class="memoji-center"
-            role="img"
-            on:mouseenter={() => (isHovering = true)}
-            on:mouseleave={() => (isHovering = false)}
-        >
-            <img
-                src="{base}memojis/{isHovering ? 'winking.png' : 'happy.png'}"
-                alt="Memoji"
-                class="memoji-img"
-            />
-            <div class="pulse"></div>
+<div
+    class="widget-container"
+    class:waving={isWaving}
+    bind:this={widgetElement}
+    style="left: {posX}%; top: {posY}%;"
+>
+    <!-- Speech Bubble -->
+    {#if showBubble}
+        <div class="speech-bubble" class:wave-bubble={isWaving}>
+            <p>{currentMessage}</p>
+            <div class="bubble-tail"></div>
         </div>
+    {/if}
 
-        <!-- Orbiting Skills -->
-        <div class="orbit-ring">
-            {#each skills as skill, i}
-                <div
-                    class="orbit-item"
-                    style="--angle: {i *
-                        (360 / skills.length)}deg; --color: {skill.color}"
-                >
-                    <div class="skill-icon" style="background: {skill.color}">
-                        {skill.icon}
-                    </div>
-                    <span class="skill-label">{skill.label}</span>
-                </div>
-            {/each}
-        </div>
+    <!-- Main Memoji -->
+    <div
+        class="memoji-avatar"
+        class:wave-animation={isWaving}
+        role="button"
+        tabindex="0"
+        style="transform: perspective(600px) rotateX({tiltX}deg) rotateY({tiltY}deg);"
+        on:mouseenter={handleMouseEnter}
+        on:mouseleave={handleMouseLeave}
+        on:click={handleClick}
+        on:keydown={(e) => e.key === "Enter" && handleClick()}
+        on:mousedown={startDrag}
+        on:touchstart={startDrag}
+    >
+        <img
+            src="{base}memojis/{currentExpression}"
+            alt="Shyam's Memoji"
+            class="memoji-img"
+            draggable="false"
+        />
+
+        <!-- Glow effect -->
+        <div class="memoji-glow"></div>
     </div>
 </div>
 
 <style>
     .widget-container {
         position: absolute;
-        top: 50%;
-        left: 50%;
         transform: translate(-50%, -50%);
-        width: 400px;
-        height: 400px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 20; /* Above icons, below windows */
-    }
-
-    .orbit-system {
-        position: relative;
-        width: 300px;
-        height: 300px;
-    }
-
-    /* Central Memoji */
-    .memoji-center {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        width: 100px;
-        height: 100px;
-        background: rgba(255, 255, 255, 0.8);
-        backdrop-filter: blur(20px);
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        justify-content: center;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-        z-index: 2;
-        cursor: grab;
-    }
-
-    .memoji-img {
-        width: 85%;
-        height: 85%;
-        object-fit: contain;
-        pointer-events: none;
-        transition: transform 0.2s ease;
-    }
-
-    .memoji-center:active {
-        cursor: grabbing;
-    }
-
-    .pulse {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        border-radius: 50%;
-        border: 2px solid rgba(255, 255, 255, 0.5);
-        animation: pulse 2s infinite;
-        pointer-events: none;
-    }
-
-    @keyframes pulse {
-        0% {
-            transform: scale(1);
-            opacity: 1;
-        }
-        100% {
-            transform: scale(1.5);
-            opacity: 0;
-        }
-    }
-
-    /* Orbit Ring */
-    .orbit-ring {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        animation: rotate 20s linear infinite;
-    }
-
-    .widget-container:hover .orbit-ring {
-        animation-play-state: paused;
-    }
-
-    @keyframes rotate {
-        from {
-            transform: rotate(0deg);
-        }
-        to {
-            transform: rotate(360deg);
-        }
-    }
-
-    /* Orbit Items */
-    .orbit-item {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        width: 60px;
-        height: 60px;
-        margin-left: -30px;
-        margin-top: -30px;
-        transform: rotate(var(--angle)) translate(140px)
-            rotate(calc(-1 * var(--angle))); /* Counter-rotate to keep upright */
+        z-index: 25;
         display: flex;
         flex-direction: column;
         align-items: center;
-        gap: 5px;
-        transition: transform 0.3s;
+        pointer-events: none;
+        transition:
+            left 0.3s ease-out,
+            top 0.3s ease-out;
     }
 
-    .skill-icon {
-        width: 50px;
-        height: 50px;
+    /* Speech Bubble */
+    .speech-bubble {
+        position: relative;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border-radius: 24px;
+        padding: 14px 22px;
+        margin-bottom: 15px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+        animation: bubbleFadeIn 0.5s ease-out;
+        pointer-events: auto;
+        max-width: 220px;
+    }
+
+    .speech-bubble.wave-bubble {
+        animation: bubbleBounce 0.6s ease-out;
+    }
+
+    .speech-bubble p {
+        margin: 0;
+        font-size: 17px;
+        font-weight: 600;
+        color: #1d1d1f;
+        text-align: center;
+        line-height: 1.4;
+    }
+
+    .bubble-tail {
+        position: absolute;
+        bottom: -12px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 0;
+        height: 0;
+        border-left: 14px solid transparent;
+        border-right: 14px solid transparent;
+        border-top: 14px solid rgba(255, 255, 255, 0.95);
+    }
+
+    @keyframes bubbleFadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px) scale(0.9);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+    }
+
+    @keyframes bubbleBounce {
+        0% {
+            transform: scale(0.8);
+        }
+        50% {
+            transform: scale(1.1);
+        }
+        100% {
+            transform: scale(1);
+        }
+    }
+
+    /* Main Memoji - BIGGER */
+    .memoji-avatar {
+        position: relative;
+        width: 200px;
+        height: 200px;
+        background: linear-gradient(
+            145deg,
+            rgba(255, 255, 255, 0.95),
+            rgba(255, 255, 255, 0.8)
+        );
+        backdrop-filter: blur(30px);
+        -webkit-backdrop-filter: blur(30px);
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 24px;
-        color: white;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-        transition: transform 0.2s;
+        cursor: grab;
+        transition:
+            transform 0.15s ease-out,
+            box-shadow 0.3s ease;
+        box-shadow:
+            0 20px 60px rgba(0, 0, 0, 0.2),
+            0 0 0 2px rgba(255, 255, 255, 0.6) inset;
+        pointer-events: auto;
+        user-select: none;
     }
 
-    .orbit-item:hover .skill-icon {
-        transform: scale(1.2);
+    /* Wave animation on the avatar */
+    .memoji-avatar.wave-animation {
+        animation: waveMotion 0.8s ease-in-out 3;
     }
 
-    .skill-label {
-        font-size: 12px;
-        font-weight: 600;
-        color: #1d1d1f;
-        background: rgba(255, 255, 255, 0.8);
-        padding: 2px 6px;
-        border-radius: 10px;
-        opacity: 0;
-        transition: opacity 0.2s;
+    @keyframes waveMotion {
+        0%,
+        100% {
+            transform: perspective(600px) rotate(0deg);
+        }
+        25% {
+            transform: perspective(600px) rotate(10deg) translateY(-5px);
+        }
+        75% {
+            transform: perspective(600px) rotate(-10deg) translateY(-5px);
+        }
     }
 
-    .orbit-item:hover .skill-label {
-        opacity: 1;
+    .memoji-avatar:hover {
+        box-shadow:
+            0 25px 70px rgba(0, 0, 0, 0.25),
+            0 0 0 3px rgba(255, 255, 255, 0.7) inset,
+            0 0 50px rgba(103, 126, 234, 0.3);
     }
 
-    /* Mobile Responsive Styles */
+    .memoji-avatar:active {
+        cursor: grabbing;
+        transform: scale(0.95) !important;
+    }
+
+    .memoji-img {
+        width: 88%;
+        height: 88%;
+        object-fit: contain;
+        pointer-events: none;
+        filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.12));
+    }
+
+    /* Glow effect behind memoji */
+    .memoji-glow {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 250%;
+        height: 250%;
+        background: radial-gradient(
+            circle,
+            rgba(103, 126, 234, 0.2) 0%,
+            rgba(118, 75, 162, 0.12) 25%,
+            transparent 60%
+        );
+        pointer-events: none;
+        z-index: -1;
+        animation: glowPulse 3s ease-in-out infinite;
+    }
+
+    @keyframes glowPulse {
+        0%,
+        100% {
+            opacity: 0.7;
+            transform: translate(-50%, -50%) scale(1);
+        }
+        50% {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1.15);
+        }
+    }
+
+    /* Floating shadow */
+    .widget-container::before {
+        content: "";
+        position: absolute;
+        bottom: -35px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 120px;
+        height: 25px;
+        background: radial-gradient(
+            ellipse,
+            rgba(0, 0, 0, 0.18),
+            transparent 70%
+        );
+        border-radius: 50%;
+        animation: shadowPulse 3s ease-in-out infinite;
+    }
+
+    @keyframes shadowPulse {
+        0%,
+        100% {
+            transform: translateX(-50%) scale(1);
+            opacity: 0.6;
+        }
+        50% {
+            transform: translateX(-50%) scale(0.75);
+            opacity: 0.35;
+        }
+    }
+
+    /* Waving container bounce */
+    .widget-container.waving {
+        animation: containerBounce 0.8s ease-in-out 2;
+    }
+
+    @keyframes containerBounce {
+        0%,
+        100% {
+            transform: translate(-50%, -50%);
+        }
+        50% {
+            transform: translate(-50%, -55%);
+        }
+    }
+
+    /* Mobile Responsive - Hide on mobile */
     @media (max-width: 768px) {
         .widget-container {
-            display: none; /* Hide widget on mobile */
+            display: none;
         }
     }
 
-    /* Tablet - smaller widget */
+    /* Tablet adjustments */
     @media (min-width: 769px) and (max-width: 1023px) {
-        .widget-container {
-            width: 300px;
-            height: 300px;
+        .memoji-avatar {
+            width: 160px;
+            height: 160px;
         }
 
-        .orbit-system {
-            width: 200px;
-            height: 200px;
+        .speech-bubble {
+            max-width: 180px;
+            padding: 12px 18px;
         }
 
-        .memoji-center {
-            width: 70px;
-            height: 70px;
-            font-size: 35px;
-        }
-
-        .orbit-item {
-            transform: rotate(var(--angle)) translate(100px)
-                rotate(calc(-1 * var(--angle)));
-        }
-
-        .skill-icon {
-            width: 40px;
-            height: 40px;
-            font-size: 20px;
+        .speech-bubble p {
+            font-size: 15px;
         }
     }
 </style>
