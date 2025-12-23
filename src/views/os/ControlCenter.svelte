@@ -45,6 +45,7 @@
         class="control-center"
         transition:fade={{ duration: 200 }}
         on:click|stopPropagation
+        on:keydown|stopPropagation
         role="dialog"
         aria-label="Control Center"
     >

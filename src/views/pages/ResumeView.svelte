@@ -87,11 +87,9 @@
                         </li>
                         <li>
                             Google UX Design | June 2025
-                            <a
-                                href="#"
-                                target="_blank"
-                                style="color: var(--accent-color); text-decoration: none;"
-                                >(View)</a
+                            <span
+                                style="color: var(--accent-color); text-decoration: none; cursor: default;"
+                                >(Coming Soon)</span
                             >
                         </li>
                     </ul>
@@ -576,20 +574,6 @@
         left: 0;
         color: var(--text-secondary);
         font-weight: bold;
-    }
-
-    .nested-list {
-        margin-top: 8px;
-        padding-left: 20px;
-    }
-
-    .nested-list li {
-        font-size: 13px;
-        padding: 3px 0;
-    }
-
-    .nested-list li::before {
-        content: "◦";
     }
 
     /* Mobile Responsive */

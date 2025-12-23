@@ -57,14 +57,16 @@
         >
     </div>
     <div class="right">
-        <div
+        <button
+            type="button"
             class="menu-item icon control-center-toggle"
             on:click={() => dispatch("toggleControlCenter")}
+            aria-label="Toggle Control Center"
         >
             <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
                 <path d="M3 6h18v2H3V6zm0 5h18v2H3v-2zm0 5h18v2H3v-2z" />
             </svg>
-        </div>
+        </button>
         <div class="menu-item time">{time}</div>
     </div>
 </div>
@@ -123,6 +125,15 @@
     .icon {
         font-family: "Material Symbols Outlined", sans-serif;
         font-size: 16px;
+    }
+
+    .control-center-toggle {
+        background: none;
+        border: none;
+        padding: 0;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
     }
 
     /* Mobile Responsive Styles */

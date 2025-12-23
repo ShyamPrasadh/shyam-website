@@ -66,8 +66,16 @@
     let isHovering = false;
     let isDragging = false;
 
+    // Check if on mobile
+    function isMobile() {
+        return window.innerWidth <= 768;
+    }
+
     // Subscribe to window store to know when windows are open
     function checkWindows(state) {
+        // On mobile, CSS handles positioning
+        if (isMobile()) return;
+
         const visibleWindows = state.windows.filter((w) => !w.minimized);
         hasActiveWindows = visibleWindows.length > 0;
 
@@ -201,6 +209,8 @@
     }
 
     function pickNewTarget() {
+        // On mobile, CSS handles positioning
+        if (isMobile()) return;
         if (hasActiveWindows) return; // Don't random move when windows open
 
         // Random position within bounds
@@ -209,7 +219,8 @@
     }
 
     function animate() {
-        if (!isDragging) {
+        // On mobile, CSS handles positioning
+        if (!isMobile() && !isDragging) {
             // Smooth movement towards target
             const dx = targetX - posX;
             const dy = targetY - posY;
@@ -574,10 +585,53 @@
         }
     }
 
-    /* Mobile Responsive - Hide on mobile */
+    /* Mobile Responsive - Smaller widget for mobile */
     @media (max-width: 768px) {
         .widget-container {
+            /* Position at bottom right, above the dock */
+            position: fixed;
+            left: auto !important;
+            right: 16px;
+            top: auto !important;
+            bottom: 90px; /* Above the dock */
+            transform: none;
+            z-index: 50;
+        }
+
+        .widget-container::before {
+            /* Hide the shadow on mobile */
             display: none;
+        }
+
+        .memoji-avatar {
+            width: 80px;
+            height: 80px;
+            box-shadow:
+                0 10px 30px rgba(0, 0, 0, 0.2),
+                0 0 0 2px rgba(255, 255, 255, 0.5) inset;
+        }
+
+        .memoji-glow {
+            width: 180%;
+            height: 180%;
+        }
+
+        .speech-bubble {
+            max-width: 160px;
+            padding: 10px 14px;
+            margin-bottom: 10px;
+            border-radius: 18px;
+        }
+
+        .speech-bubble p {
+            font-size: 13px;
+        }
+
+        .bubble-tail {
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-top: 10px solid rgba(255, 255, 255, 0.95);
+            bottom: -10px;
         }
     }
 
