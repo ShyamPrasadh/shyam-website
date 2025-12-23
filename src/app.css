@@ -20,9 +20,16 @@
     --font-stack: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     --border-color: #e5e5e5;
     --sidebar-bg: #f5f5f7;
+
+    /* Light Mode Scrollbar */
+    --scrollbar-track: #f5f5f7;
+    --scrollbar-thumb: #c1c1c1;
+    --scrollbar-thumb-hover: #a8a8a8;
 }
 
 [data-theme="dark"] {
+    color-scheme: dark;
+    /* Forces browser UI to be dark */
     /* Dark Mode Colors */
     --bg-color: #000000;
     /* Unified dark background */
@@ -41,6 +48,52 @@
     --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
     --shadow-md: 0 4px 24px rgba(0, 0, 0, 0.4);
     --shadow-lg: 0 8px 40px rgba(0, 0, 0, 0.6);
+
+    /* Dark Mode Scrollbar */
+    --scrollbar-track: #1c1c1e;
+    --scrollbar-thumb: #3a3a3c;
+    --scrollbar-thumb-hover: #48484a;
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+}
+
+/* Default (Light) */
+::-webkit-scrollbar-track {
+    background: #f5f5f7;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 6px;
+    border: 3px solid #f5f5f7;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+
+/* Dark Theme Override - Explicitly target descendants with hardcoded values */
+html[data-theme="dark"] ::-webkit-scrollbar-track {
+    background: #1c1c1e !important;
+}
+
+html[data-theme="dark"] ::-webkit-scrollbar-thumb {
+    background: #3a3a3c !important;
+    border-color: #1c1c1e !important;
+}
+
+html[data-theme="dark"] ::-webkit-scrollbar-thumb:hover {
+    background: #48484a !important;
+}
+
+/* Firefox Scrollbar */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
 }
 
 /* Mobile-specific variables */

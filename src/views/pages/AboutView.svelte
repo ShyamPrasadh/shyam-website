@@ -130,74 +130,77 @@
 </script>
 
 <section id="about" class="section-container">
-    <div class="section-header">
-        <h2 class="section-title">
-            <span class="gradient-text">About Me</span>
-        </h2>
-        <p class="section-desc">
-            Drag & drop the boxes to explore my character.
-        </p>
-    </div>
+    <div class="content-wrapper">
+        <div class="section-header">
+            <h2 class="section-title">
+                <span class="gradient-text">About Me</span>
+            </h2>
+            <p class="section-desc">
+                Drag & drop the boxes to explore my character.
+            </p>
+        </div>
 
-    <div class="bento-grid">
-        {#each cards as card, index (card.id)}
-            <div
-                class="bento-card {card.size}-card {hoveringIndex === index
-                    ? 'hovering'
-                    : ''}"
-                draggable="true"
-                role="listitem"
-                on:dragstart={(e) => handleDragStart(e, index)}
-                on:dragover={(e) => handleDragOver(e, index)}
-                on:drop={(e) => handleDrop(e, index)}
-                on:dragend={handleDragEnd}
-                animate:flip={{ duration: 300 }}
-                in:fade={{ duration: 300 }}
-            >
-                <div class="card-icon">{card.icon}</div>
-                <div class="card-content">
-                    <h3>{card.title}</h3>
+        <div class="bento-grid">
+            {#each cards as card, index (card.id)}
+                <div
+                    class="bento-card {card.size}-card {hoveringIndex === index
+                        ? 'hovering'
+                        : ''}"
+                    draggable="true"
+                    role="listitem"
+                    on:dragstart={(e) => handleDragStart(e, index)}
+                    on:dragover={(e) => handleDragOver(e, index)}
+                    on:drop={(e) => handleDrop(e, index)}
+                    on:dragend={handleDragEnd}
+                    animate:flip={{ duration: 300 }}
+                    in:fade={{ duration: 300 }}
+                >
+                    <div class="card-icon">{card.icon}</div>
+                    <div class="card-content">
+                        <h3>{card.title}</h3>
 
-                    {#if card.type === "skills"}
-                        <div class="tags">
-                            {#each card.tags as tag}
-                                <span>{tag}</span>
-                            {/each}
-                        </div>
-                    {:else if card.type === "experience"}
-                        <ul class="experience-list">
-                            {#each card.items as item}
-                                <li>
-                                    <strong>{item.role}</strong>
-                                    <span class="org">{item.org}</span>
-                                    <span class="date">{item.date}</span>
-                                </li>
-                            {/each}
-                        </ul>
-                    {:else}
-                        <p class="text-content">{card.content}</p>
-                        {#if card.sub}
-                            <p class="sub-text">{card.sub}</p>
+                        {#if card.type === "skills"}
+                            <div class="tags">
+                                {#each card.tags as tag}
+                                    <span>{tag}</span>
+                                {/each}
+                            </div>
+                        {:else if card.type === "experience"}
+                            <ul class="experience-list">
+                                {#each card.items as item}
+                                    <li>
+                                        <strong>{item.role}</strong>
+                                        <span class="org">{item.org}</span>
+                                        <span class="date">{item.date}</span>
+                                    </li>
+                                {/each}
+                            </ul>
+                        {:else}
+                            <p class="text-content">{card.content}</p>
+                            {#if card.sub}
+                                <p class="sub-text">{card.sub}</p>
+                            {/if}
                         {/if}
-                    {/if}
+                    </div>
                 </div>
-            </div>
-        {/each}
+            {/each}
+        </div>
     </div>
 </section>
 
 <style>
     .section-container {
-        padding: 2rem;
+        padding: 0;
         color: var(--text-color);
         background: var(--bg-color);
-        height: 100%;
-        overflow-y: auto;
-        /* Hide scrollbar for cleaner look */
-        scrollbar-width: none;
+        width: 100%;
+        /* Scrolling handled by Window */
     }
-    .section-container::-webkit-scrollbar {
-        display: none;
+
+    .content-wrapper {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem; /* Add padding here */
     }
 
     .section-header {
@@ -220,8 +223,8 @@
         display: grid;
         grid-template-columns: repeat(1, 1fr); /* Mobile default */
         gap: 1.5rem;
-        max-width: 1400px; /* Wider max-width for "full screen" feel */
-        margin: 0 auto;
+        /* max-width handled by wrapper */
+        /* margin handled by wrapper */
         padding-bottom: 4rem;
         grid-auto-flow: dense; /* Fills gaps automatically */
     }

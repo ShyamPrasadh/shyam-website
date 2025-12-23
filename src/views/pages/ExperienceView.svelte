@@ -148,93 +148,96 @@
 </script>
 
 <section id="journey" class="ios-journey">
-    <div class="header">
-        <h2 class="title" in:fade={{ duration: 800 }}>
-            <span class="gradient-text">Journey</span>
-        </h2>
-        <p class="subtitle" in:fade={{ duration: 800, delay: 200 }}>
-            A timeline of growth & impact
-        </p>
-    </div>
-
-    <div class="timeline-container">
-        <!-- Central Line with gradient animation -->
-        <div class="line-container">
-            <div class="line-bg"></div>
-            <div
-                class="line-fill"
-                style="height: {visibleItems.length * 20}%"
-            ></div>
+    <div class="content-wrapper">
+        <div class="header">
+            <h2 class="title" in:fade={{ duration: 800 }}>
+                <span class="gradient-text">Journey</span>
+            </h2>
+            <p class="subtitle" in:fade={{ duration: 800, delay: 200 }}>
+                A timeline of growth & impact
+            </p>
         </div>
 
-        {#each journeyItems as item, i (item.id)}
-            {#if visibleItems.includes(i)}
+        <div class="timeline-container">
+            <!-- Central Line with gradient animation -->
+            <div class="line-container">
+                <div class="line-bg"></div>
                 <div
-                    class="journey-card-wrapper {i % 2 === 0
-                        ? 'left'
-                        : 'right'}"
-                    in:fly={{ y: 50, duration: 800, delay: 0 }}
-                >
-                    <!-- Dot on the line -->
-                    <div class="timeline-dot-wrapper">
-                        <div class="timeline-dot {item.color}">
-                            <div class="dot-pulse"></div>
-                        </div>
-                    </div>
+                    class="line-fill"
+                    style="height: {visibleItems.length * 20}%"
+                ></div>
+            </div>
 
-                    <!-- The 3D Card -->
+            {#each journeyItems as item, i (item.id)}
+                {#if visibleItems.includes(i)}
                     <div
-                        class="card-perspective"
-                        use:tilt={{ max: 8, scale: 1.02 }}
+                        class="journey-card-wrapper {i % 2 === 0
+                            ? 'left'
+                            : 'right'}"
+                        in:fly={{ y: 50, duration: 800, delay: 0 }}
                     >
+                        <!-- Dot on the line -->
+                        <div class="timeline-dot-wrapper">
+                            <div class="timeline-dot {item.color}">
+                                <div class="dot-pulse"></div>
+                            </div>
+                        </div>
+
+                        <!-- The 3D Card -->
                         <div
-                            class="ios-card {item.color}-theme card-content-wrapper"
+                            class="card-perspective"
+                            use:tilt={{ max: 8, scale: 1.02 }}
                         >
-                            <div class="glare"></div>
+                            <div
+                                class="ios-card {item.color}-theme card-content-wrapper"
+                            >
+                                <div class="glare"></div>
 
-                            <div class="card-header">
-                                <div class="icon-box {item.color}">
-                                    {@html getIcon(item.icon)}
+                                <div class="card-header">
+                                    <div class="icon-box {item.color}">
+                                        {@html getIcon(item.icon)}
+                                    </div>
+                                    <div class="header-text">
+                                        <h3>{item.role}</h3>
+                                        <span class="org">{item.org}</span>
+                                    </div>
+                                    <span class="date-badge">{item.date}</span>
                                 </div>
-                                <div class="header-text">
-                                    <h3>{item.role}</h3>
-                                    <span class="org">{item.org}</span>
+
+                                <div class="card-body">
+                                    <p>{item.desc}</p>
                                 </div>
-                                <span class="date-badge">{item.date}</span>
+
+                                {#if item.tags}
+                                    <div class="card-footer">
+                                        {#each item.tags as tag}
+                                            <span class="tag">{tag}</span>
+                                        {/each}
+                                    </div>
+                                {/if}
                             </div>
-
-                            <div class="card-body">
-                                <p>{item.desc}</p>
-                            </div>
-
-                            {#if item.tags}
-                                <div class="card-footer">
-                                    {#each item.tags as tag}
-                                        <span class="tag">{tag}</span>
-                                    {/each}
-                                </div>
-                            {/if}
                         </div>
                     </div>
-                </div>
-            {/if}
-        {/each}
+                {/if}
+            {/each}
+        </div>
     </div>
 </section>
 
 <style>
     .ios-journey {
-        padding: 40px 20px;
-        height: 100%;
-        overflow-y: auto;
-        overflow-x: hidden; /* Prevent horizontal scroll from tilt */
+        padding: 0;
         color: #1d1d1f;
         background: transparent;
-        scrollbar-width: none;
         perspective: 1000px;
+        width: 100%;
+        /* Scrolling handled by Window */
     }
-    .ios-journey::-webkit-scrollbar {
-        display: none;
+
+    .content-wrapper {
+        padding: 40px 20px; /* Add padding here */
+        width: 100%;
+        max-width: 100%;
     }
 
     .header {

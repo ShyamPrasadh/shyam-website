@@ -182,10 +182,11 @@
 
     .content {
         flex: 1;
-        overflow: auto;
+        overflow-y: auto; /* Window handles vertical scrolling */
+        overflow-x: hidden; /* Prevent horizontal scroll */
         position: relative;
         background: var(--bg-color);
-        padding-bottom: 30px; /* Minimal padding to prevent abrupt cutoff */
+        padding: 0;
     }
 
     /* Mobile Responsive Styles */

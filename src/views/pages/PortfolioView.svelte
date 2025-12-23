@@ -5,90 +5,107 @@
     const aatralImage = import.meta.env.BASE_URL + "images/aatral.jpg";
 </script>
 
-<section
-    id="portfolio"
-    class="section-container"
-    style="padding: 2rem; padding-bottom: 40px;"
->
-    <div class="section-header">
-        <h2 class="section-title"><span class="gradient-text">Work</span></h2>
-    </div>
-    <div class="portfolio-grid">
-        <!-- Thriftz – UX Case Study -->
-        <a
-            href="https://www.behance.net/gallery/213911073/UX-CASE-STUDY-THRIFTZ"
-            class="project-card-link"
-            target="_blank"
-            rel="noopener"
-        >
-            <article class="project-card">
-                <div
-                    class="project-image"
-                    style="background-image: url('{thriftzUxImage}');"
-                ></div>
-                <div class="overlay"></div>
-                <div class="project-info">
-                    <h3>Thriftz – UX Case Study</h3>
-                    <p>
-                        Comprehensive UX research, strategy, and design for a
-                        sustainable thrift marketplace.
-                    </p>
-                    <span class="preview-label">Preview <span>→</span></span>
-                </div>
-            </article>
-        </a>
+<section id="portfolio" class="portfolio-container">
+    <div class="content-wrapper">
+        <div class="section-header">
+            <h2 class="section-title">
+                <span class="gradient-text">Work</span>
+            </h2>
+        </div>
+        <div class="portfolio-grid">
+            <!-- Thriftz – UX Case Study -->
+            <a
+                href="https://www.behance.net/gallery/213911073/UX-CASE-STUDY-THRIFTZ"
+                class="project-card-link"
+                target="_blank"
+                rel="noopener"
+            >
+                <article class="project-card">
+                    <div
+                        class="project-image"
+                        style="background-image: url('{thriftzUxImage}');"
+                    ></div>
+                    <div class="overlay"></div>
+                    <div class="project-info">
+                        <h3>Thriftz – UX Case Study</h3>
+                        <p>
+                            Comprehensive UX research, strategy, and design for
+                            a sustainable thrift marketplace.
+                        </p>
+                        <span class="preview-label">Preview <span>→</span></span
+                        >
+                    </div>
+                </article>
+            </a>
 
-        <!-- Thriftz – Android Presentation -->
-        <a
-            href="https://www.behance.net/gallery/218032031/THRIFTZ-ANDROID-PRESENTATION"
-            class="project-card-link"
-            target="_blank"
-            rel="noopener"
-        >
-            <article class="project-card">
-                <div
-                    class="project-image"
-                    style="background-image: url('{thriftzAndroidImage}');"
-                ></div>
-                <div class="overlay"></div>
-                <div class="project-info">
-                    <h3>Thriftz – Android Presentation</h3>
-                    <p>
-                        High‑fidelity Android UI presentation showcasing the
-                        final design system and interactions.
-                    </p>
-                    <span class="preview-label">Preview <span>→</span></span>
-                </div>
-            </article>
-        </a>
+            <!-- Thriftz – Android Presentation -->
+            <a
+                href="https://www.behance.net/gallery/218032031/THRIFTZ-ANDROID-PRESENTATION"
+                class="project-card-link"
+                target="_blank"
+                rel="noopener"
+            >
+                <article class="project-card">
+                    <div
+                        class="project-image"
+                        style="background-image: url('{thriftzAndroidImage}');"
+                    ></div>
+                    <div class="overlay"></div>
+                    <div class="project-info">
+                        <h3>Thriftz – Android Presentation</h3>
+                        <p>
+                            High‑fidelity Android UI presentation showcasing the
+                            final design system and interactions.
+                        </p>
+                        <span class="preview-label">Preview <span>→</span></span
+                        >
+                    </div>
+                </article>
+            </a>
 
-        <!-- Aatral – Energy Dashboard -->
-        <a
-            href="https://aatral-eta.vercel.app"
-            class="project-card-link"
-            target="_blank"
-            rel="noopener"
-        >
-            <article class="project-card">
-                <div
-                    class="project-image"
-                    style="background-image: url('{aatralImage}');"
-                ></div>
-                <div class="overlay"></div>
-                <div class="project-info">
-                    <h3>Aatral – Energy Dashboard</h3>
-                    <p>
-                        Real-time energy monitoring dashboard for smart
-                        buildings with CO2 tracking and power usage analytics.
-                    </p>
-                    <span class="preview-label">Preview <span>→</span></span>
-                </div>
-            </article>
-        </a>
+            <!-- Aatral – Energy Dashboard -->
+            <a
+                href="https://aatral-eta.vercel.app"
+                class="project-card-link"
+                target="_blank"
+                rel="noopener"
+            >
+                <article class="project-card">
+                    <div
+                        class="project-image"
+                        style="background-image: url('{aatralImage}');"
+                    ></div>
+                    <div class="overlay"></div>
+                    <div class="project-info">
+                        <h3>Aatral – Energy Dashboard</h3>
+                        <p>
+                            Real-time energy monitoring dashboard for smart
+                            buildings with CO2 tracking and power usage
+                            analytics.
+                        </p>
+                        <span class="preview-label">Preview <span>→</span></span
+                        >
+                    </div>
+                </article>
+            </a>
+        </div>
     </div>
 </section>
 
 <style>
+    .portfolio-container {
+        width: 100%;
+        background: var(--bg-color);
+        /* Scrolling handled by Window */
+    }
+
+    .content-wrapper {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+        padding-bottom: 40px;
+    }
+
     .portfolio-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));

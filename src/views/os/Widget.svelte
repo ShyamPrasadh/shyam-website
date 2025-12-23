@@ -1,6 +1,9 @@
 <script>
     import { draggable } from "../../lib/actions/draggable";
 
+    let isHovering = false;
+    const base = import.meta.env.BASE_URL;
+
     // Using emojis for now, could be replaced with images
     const skills = [
         { icon: "🔍", label: "Research", color: "#FF375F" },
@@ -14,8 +17,17 @@
 <div class="widget-container" use:draggable={{ handle: ".memoji-center" }}>
     <div class="orbit-system">
         <!-- Central Memoji -->
-        <div class="memoji-center">
-            <span class="memoji">👨‍💻</span>
+        <div
+            class="memoji-center"
+            role="img"
+            on:mouseenter={() => (isHovering = true)}
+            on:mouseleave={() => (isHovering = false)}
+        >
+            <img
+                src="{base}memojis/{isHovering ? 'winking.png' : 'happy.png'}"
+                alt="Memoji"
+                class="memoji-img"
+            />
             <div class="pulse"></div>
         </div>
 
@@ -71,10 +83,18 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 50px;
+        justify-content: center;
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
         z-index: 2;
         cursor: grab;
+    }
+
+    .memoji-img {
+        width: 85%;
+        height: 85%;
+        object-fit: contain;
+        pointer-events: none;
+        transition: transform 0.2s ease;
     }
 
     .memoji-center:active {
