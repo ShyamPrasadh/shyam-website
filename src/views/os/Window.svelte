@@ -16,6 +16,16 @@
     export let maximized = false;
 
     let windowElement;
+    let isDragging = false;
+
+    function handleDragStart() {
+        isDragging = true;
+        handleFocus();
+    }
+
+    function handleDragEnd() {
+        isDragging = false;
+    }
 
     function handleDrag({ dx, dy }) {
         if (maximized) return; // Can't drag when maximized
@@ -44,12 +54,15 @@
 {#if !minimized}
     <!-- svelte-ignore a11y-no-static-element-interactions -->
     <div
-        class="window {maximized ? 'maximized' : ''}"
+        class="window {maximized ? 'maximized' : ''} {isDragging
+            ? 'dragging'
+            : ''}"
         style="left: {x}px; top: {y}px; z-index: {zIndex}; width: {width}px; height: {height}px;"
         use:draggable={{
             handle: ".title-bar",
             onDrag: handleDrag,
-            onDragStart: handleFocus,
+            onDragStart: handleDragStart,
+            onDragEnd: handleDragEnd,
         }}
         on:mousedown={handleFocus}
         transition:genie={{ duration: 500, id, easing: cubicOut }}
@@ -99,6 +112,12 @@
             top 0.3s cubic-bezier(0.25, 0.8, 0.25, 1),
             left 0.3s cubic-bezier(0.25, 0.8, 0.25, 1),
             border-radius 0.3s;
+        will-change: left, top, width, height;
+    }
+
+    .window.dragging {
+        transition: none !important;
+        cursor: grabbing !important;
     }
 
     .window.maximized {

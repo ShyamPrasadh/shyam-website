@@ -18,10 +18,12 @@
   import BootScreen from "./views/os/BootScreen.svelte";
   import ControlCenter from "./views/os/ControlCenter.svelte";
   import SplashCursor from "./views/components/SplashCursor.svelte";
+  import Walkthrough from "./views/components/Walkthrough.svelte";
 
   let splashComplete = false;
   let booted = false;
   let controlCenterVisible = false;
+  let walkthroughActive = false;
 
   // Initialize theme on mount
   ThemeController.initTheme();
@@ -38,7 +40,18 @@
       if (welcomeApp) {
         WindowController.openApp(welcomeApp);
       }
-    }, 500);
+
+      // Start walkthrough if not seen before
+      const hasSeenWalkthrough = localStorage.getItem("hasSeenWalkthrough");
+      if (!hasSeenWalkthrough) {
+        walkthroughActive = true;
+      }
+    }, 1000);
+  }
+
+  function handleWalkthroughComplete() {
+    walkthroughActive = false;
+    localStorage.setItem("hasSeenWalkthrough", "true");
   }
 
   function toggleControlCenter(event) {
@@ -103,6 +116,11 @@
     </div>
 
     <Dock apps={dockApps} />
+
+    <Walkthrough
+      active={walkthroughActive}
+      on:complete={handleWalkthroughComplete}
+    />
   {/if}
 </main>
 
