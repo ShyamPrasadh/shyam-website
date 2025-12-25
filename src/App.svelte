@@ -19,6 +19,7 @@
   import ControlCenter from "./views/os/ControlCenter.svelte";
   import SplashCursor from "./views/components/SplashCursor.svelte";
   import Walkthrough from "./views/components/Walkthrough.svelte";
+  import DesktopExperience from "./views/os/DesktopExperience.svelte";
 
   let splashComplete = false;
   let booted = false;
@@ -88,6 +89,8 @@
     <div class="wallpaper" in:fade={{ duration: 1000 }}></div>
 
     <SplashCursor />
+
+    <DesktopExperience />
 
     <Widget />
 

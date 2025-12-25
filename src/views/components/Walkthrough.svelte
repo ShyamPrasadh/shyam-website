@@ -37,6 +37,18 @@
             target: ".dock",
         },
         {
+            title: "Skills & Tech",
+            description:
+                "Quick access to my technical stack right on the desktop. Hover over icons to see them come alive!",
+            target: ".desktop-grid",
+        },
+        {
+            title: "Latest Achievements",
+            description:
+                "Check out my recent wins and certifications in this floating widget.",
+            target: ".achievements-widget",
+        },
+        {
             title: "Control Center",
             description:
                 "Switch between Light and Dark mode, or adjust system volume and brightness.",
