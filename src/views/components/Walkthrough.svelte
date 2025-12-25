@@ -15,7 +15,7 @@
         {
             title: "Welcome! 👋",
             description:
-                "Welcome to my interactive OS portfolio. I'm excited to show you around!",
+                "Welcome to my interactive MAC style portfolio. I'm excited to show you around!",
             target: null, // Center
         },
         {
@@ -50,14 +50,29 @@
         },
     ];
 
-    $: if (active && !showWalkthrough) {
+    let hasStarted = false;
+    let hasFinished = false;
+
+    $: if (active && !showWalkthrough && !hasStarted && !hasFinished) {
         startWalkthrough();
     }
 
-    function startWalkthrough() {
+    // Reset loop guard ONLY if explicitly set to inactive
+    $: if (!active) {
+        hasStarted = false;
+        hasFinished = false;
+        showWalkthrough = false;
+    }
+
+    async function startWalkthrough() {
+        hasStarted = true;
         showWalkthrough = true;
         currentStep = 0;
-        updateHighlight();
+
+        // Wait for OS components to finish mounting/transitioning
+        setTimeout(() => {
+            updateHighlight();
+        }, 300);
     }
 
     function nextStep() {
@@ -78,8 +93,11 @@
 
     function closeWalkthrough() {
         showWalkthrough = false;
+        hasFinished = true;
         dispatch("complete");
     }
+
+    let tooltipLeft = 0;
 
     function updateHighlight() {
         const step = steps[currentStep];
@@ -94,19 +112,36 @@
                     height: rect.height,
                 };
 
-                // Smart positioning: if target is in bottom half, show tooltip above
+                // Smart vertical positioning
                 const centerY = rect.top + rect.height / 2;
                 tooltipPosition =
                     centerY > window.innerHeight / 2 ? "top" : "bottom";
+
+                // Smart horizontal positioning (Clamping)
+                const tooltipWidth = 320;
+                let targetCenterX = rect.left + rect.width / 2;
+
+                // Keep tooltip within screen bounds with 20px padding
+                const margin = 20;
+                const minLeft = tooltipWidth / 2 + margin;
+                const maxLeft = window.innerWidth - (tooltipWidth / 2 + margin);
+                tooltipLeft = Math.max(
+                    minLeft,
+                    Math.min(maxLeft, targetCenterX),
+                );
             }
         } else {
             highlightRect = { top: 0, left: 0, width: 0, height: 0 };
             tooltipPosition = "bottom";
+            tooltipLeft = 0;
         }
     }
 
-    // Update highlight on window resize
     onMount(() => {
+        if (active) {
+            startWalkthrough();
+        }
+
         const handleResize = () => {
             if (showWalkthrough) updateHighlight();
         };
@@ -161,7 +196,7 @@
                       tooltipPosition === "bottom"
                           ? `top: ${highlightRect.top + highlightRect.height + 20}px;`
                           : `top: ${highlightRect.top - 20}px; transform: translate(-50%, -100%);`
-                  } left: ${highlightRect.left + highlightRect.width / 2}px;`
+                  } left: ${tooltipLeft}px;`
                 : ""}
             in:fly={{
                 y: tooltipPosition === "bottom" ? 20 : -20,
@@ -169,7 +204,13 @@
             }}
         >
             {#if steps[currentStep].target && tooltipPosition === "bottom"}
-                <div class="arrow up"></div>
+                <div
+                    class="arrow up"
+                    style="left: {highlightRect.left +
+                        highlightRect.width / 2 -
+                        tooltipLeft +
+                        160}px;"
+                ></div>
             {/if}
             <div class="tooltip">
                 <div class="step-indicator">
@@ -196,7 +237,13 @@
                 </div>
             </div>
             {#if steps[currentStep].target && tooltipPosition === "top"}
-                <div class="arrow down"></div>
+                <div
+                    class="arrow down"
+                    style="left: {highlightRect.left +
+                        highlightRect.width / 2 -
+                        tooltipLeft +
+                        160}px;"
+                ></div>
             {/if}
         </div>
     </div>
@@ -360,16 +407,20 @@
         border-left: 10px solid transparent;
         border-right: 10px solid transparent;
         transition: all 0.4s cubic-bezier(0.25, 0.1, 0.25, 1);
+        position: absolute;
+        transform: translateX(-50%);
     }
 
     .arrow.up {
         border-bottom: 10px solid rgba(255, 255, 255, 0.95);
         margin-bottom: -1px;
+        top: -10px;
     }
 
     .arrow.down {
         border-top: 10px solid rgba(255, 255, 255, 0.95);
         margin-top: -1px;
+        bottom: -10px;
     }
 
     /* Adjust tooltip position if it's too low */

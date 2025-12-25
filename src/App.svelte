@@ -41,11 +41,8 @@
         WindowController.openApp(welcomeApp);
       }
 
-      // Start walkthrough if not seen before
-      const hasSeenWalkthrough = localStorage.getItem("hasSeenWalkthrough");
-      if (!hasSeenWalkthrough) {
-        walkthroughActive = true;
-      }
+      // Start walkthrough
+      walkthroughActive = true;
     }, 1000);
   }
 
@@ -117,10 +114,9 @@
 
     <Dock apps={dockApps} />
 
-    <Walkthrough
-      active={walkthroughActive}
-      on:complete={handleWalkthroughComplete}
-    />
+    {#if walkthroughActive}
+      <Walkthrough active={true} on:complete={handleWalkthroughComplete} />
+    {/if}
   {/if}
 </main>
 
