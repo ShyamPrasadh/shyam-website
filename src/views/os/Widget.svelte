@@ -31,8 +31,9 @@
         top: "star_eye.png",
         bottom: "thinking.png",
         hover: "lovely.png",
-        click: "victory.png",
+        victory: "victory.png",
         happy: "happy_winking.png",
+        angry: "angry.png",
     };
 
     let currentExpression = expressions.waving;
@@ -40,6 +41,11 @@
     let messageIndex = 0;
     let showBubble = true;
     let isWaving = true;
+    let isAngry = false;
+    let dragStartTime = 0;
+    let isGettingHeadache = false;
+    let angryTimeout;
+    let headacheTimeout;
 
     // Position state
     let posX = 85; // Start on right side (percentage)
@@ -106,7 +112,7 @@
     }
 
     function handleMouseMove(e) {
-        if (!widgetElement || isDragging) return;
+        if (!widgetElement || isDragging || isAngry) return;
 
         const clientX = e.type.includes("touch")
             ? e.touches[0].clientX
@@ -151,7 +157,8 @@
     }
 
     function handleClick() {
-        currentExpression = expressions.click;
+        if (isAngry) return;
+        currentExpression = expressions.victory;
         currentMessage = "Yay! You clicked me! 🎉";
         showBubble = true;
         isWaving = false;
@@ -163,6 +170,7 @@
     }
 
     function handleMouseEnter() {
+        if (isAngry) return;
         isHovering = true;
         isWaving = false;
         currentExpression = expressions.hover;
@@ -188,6 +196,7 @@
     }
 
     function doWave() {
+        if (isAngry) return;
         // Wave animation - alternate expressions
         isWaving = true;
         currentExpression = expressions.waving;
@@ -227,7 +236,7 @@
 
     function animate() {
         // Smooth movement towards target
-        if (!isDragging) {
+        if (!isDragging && !isAngry) {
             const dx = targetX - posX;
             const dy = targetY - posY;
 
@@ -258,7 +267,20 @@
             : e.clientY;
         dragStartX = clientX - (posX / 100) * window.innerWidth;
         dragStartY = clientY - (posY / 100) * window.innerHeight;
+        dragStartTime = Date.now();
 
+        if (angryTimeout) clearTimeout(angryTimeout);
+        if (headacheTimeout) clearTimeout(headacheTimeout);
+
+        // If we start dragging again while angry, reset the headache sequence
+        if (isAngry) {
+            isGettingHeadache = false;
+            currentMessage = "STOP IT! 😤";
+            currentExpression = expressions.angry;
+        }
+
+        // Hide bubble during drag until angry
+        if (!isAngry) showBubble = false;
         window.addEventListener("mousemove", onDrag);
         window.addEventListener("mouseup", stopDrag);
         window.addEventListener("touchmove", onDrag);
@@ -277,6 +299,24 @@
         posX = ((clientX - dragStartX) / window.innerWidth) * 100;
         posY = ((clientY - dragStartY) / window.innerHeight) * 100;
 
+        // Trigger angry after 4 seconds of dragging
+        const elapsed = Date.now() - dragStartTime;
+        if (elapsed > 4000 && !isAngry) {
+            isAngry = true;
+            isGettingHeadache = false;
+            currentExpression = expressions.angry;
+            currentMessage = "STOP IT! 😤";
+            showBubble = true;
+            isWaving = false;
+            isHovering = false;
+        }
+
+        if (isAngry && !isGettingHeadache) {
+            currentExpression = expressions.angry;
+            currentMessage = "STOP IT! 😤";
+            showBubble = true;
+        }
+
         posX = Math.max(8, Math.min(92, posX));
         posY = Math.max(12, Math.min(70, posY));
 
@@ -290,6 +330,28 @@
         window.removeEventListener("mouseup", stopDrag);
         window.removeEventListener("touchmove", onDrag);
         window.removeEventListener("touchend", stopDrag);
+
+        if (isAngry) {
+            // Sequence: STOP IT -> Headache -> Normal
+            headacheTimeout = setTimeout(() => {
+                isGettingHeadache = true;
+                currentMessage = "I'm getting a headache... 😵‍💫";
+                currentExpression = expressions.bottom; // Thinking/dizzy look
+
+                angryTimeout = setTimeout(() => {
+                    isAngry = false;
+                    isGettingHeadache = false;
+                    currentExpression = expressions.default;
+                    showBubble = true;
+                    if (!isHovering && !isWaving) {
+                        cycleMessage();
+                    }
+                }, 4000);
+            }, 2000);
+        } else {
+            // Normal release - show bubble again
+            showBubble = true;
+        }
     }
 
     onMount(() => {
@@ -312,21 +374,21 @@
 
         // Wave periodically (every 15 seconds)
         waveInterval = setInterval(() => {
-            if (!isHovering && !isDragging) {
+            if (!isHovering && !isDragging && !isAngry) {
                 doWave();
             }
         }, 15000);
 
         // Cycle messages every 5 seconds
         messageInterval = setInterval(() => {
-            if (!isHovering && !isWaving) {
+            if (!isHovering && !isWaving && !isAngry) {
                 cycleMessage();
             }
         }, 5000);
 
         // Pick new movement target every 10 seconds (only when no windows)
         moveInterval = setInterval(() => {
-            if (!hasActiveWindows && !isDragging) {
+            if (!hasActiveWindows && !isDragging && !isAngry) {
                 pickNewTarget();
             }
         }, 10000);
@@ -364,6 +426,7 @@
     <div
         class="memoji-avatar"
         class:wave-animation={isWaving}
+        class:angry-state={isAngry}
         role="button"
         tabindex="0"
         style="transform: perspective(600px) rotateX({tiltX}deg) rotateY({tiltY}deg);"
@@ -382,7 +445,7 @@
         />
 
         <!-- Glow effect -->
-        <div class="memoji-glow"></div>
+        <div class="memoji-glow" class:angry-glow={isAngry}></div>
     </div>
 </div>
 
@@ -395,9 +458,7 @@
         flex-direction: column;
         align-items: center;
         pointer-events: none;
-        transition:
-            left 0.3s ease-out,
-            top 0.3s ease-out;
+        /* Removed CSS transitions as they conflict with JS-driven dragging and animation */
     }
 
     /* Speech Bubble */
@@ -520,6 +581,26 @@
         transform: scale(0.95) !important;
     }
 
+    .memoji-avatar.angry-state {
+        box-shadow:
+            0 20px 60px rgba(255, 0, 0, 0.3),
+            0 0 0 2px rgba(255, 100, 100, 0.6) inset !important;
+        animation: shake 0.1s ease-in-out infinite;
+    }
+
+    @keyframes shake {
+        0%,
+        100% {
+            transform: perspective(600px) translateX(0);
+        }
+        25% {
+            transform: perspective(600px) translateX(-2px);
+        }
+        75% {
+            transform: perspective(600px) translateX(2px);
+        }
+    }
+
     .memoji-img {
         width: 88%;
         height: 88%;
@@ -545,6 +626,16 @@
         pointer-events: none;
         z-index: -1;
         animation: glowPulse 3s ease-in-out infinite;
+    }
+
+    .memoji-glow.angry-glow {
+        background: radial-gradient(
+            circle,
+            rgba(255, 0, 0, 0.4) 0%,
+            rgba(255, 0, 0, 0.2) 25%,
+            transparent 60%
+        );
+        animation: none; /* Stop pulsing when angry */
     }
 
     @keyframes glowPulse {
