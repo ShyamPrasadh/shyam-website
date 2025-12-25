@@ -22,10 +22,9 @@
         "Let's design something cool!",
     ];
 
-    // Expressions
     const expressions = {
         default: "happy.png",
-        waving: "hugging.png", // Arms out = waving feel
+        waving: "hugging.png",
         left: "winking.png",
         right: "grinning.png",
         top: "star_eye.png",
@@ -34,6 +33,7 @@
         victory: "victory.png",
         happy: "happy_winking.png",
         angry: "angry.png",
+        badWord: "bad_word.png",
     };
 
     let currentExpression = expressions.waving;
@@ -41,11 +41,24 @@
     let messageIndex = 0;
     let showBubble = true;
     let isWaving = true;
+
+    // Emotional Escalation State
     let isAngry = false;
+    let emotionalState = "normal"; // 'normal', 'annoyed', 'angry', 'bad-word'
     let dragStartTime = 0;
-    let isGettingHeadache = false;
+    let dragDuration = 0;
+    let tintIntensity = 0; // 0 to 1
+    let isRecovering = false;
+    let showFeelingBetter = false;
+
+    // Emoji Effects
+    let popEmojis = []; // { id, angle, distance, scale, opacity }
+    let orbitAngle = 0;
+    let showOrbit = false;
+
     let angryTimeout;
-    let headacheTimeout;
+    let recoveryInterval;
+    let orbitZIndex = 30;
 
     // Position state
     let posX = 85; // Start on right side (percentage)
@@ -112,7 +125,7 @@
     }
 
     function handleMouseMove(e) {
-        if (!widgetElement || isDragging || isAngry) return;
+        if (!widgetElement || isDragging || emotionalState !== "normal") return;
 
         const clientX = e.type.includes("touch")
             ? e.touches[0].clientX
@@ -157,7 +170,7 @@
     }
 
     function handleClick() {
-        if (isAngry) return;
+        if (emotionalState !== "normal") return;
         currentExpression = expressions.victory;
         currentMessage = "Yay! You clicked me! 🎉";
         showBubble = true;
@@ -170,7 +183,7 @@
     }
 
     function handleMouseEnter() {
-        if (isAngry) return;
+        if (emotionalState !== "normal") return;
         isHovering = true;
         isWaving = false;
         currentExpression = expressions.hover;
@@ -196,7 +209,7 @@
     }
 
     function doWave() {
-        if (isAngry) return;
+        if (emotionalState !== "normal") return;
         // Wave animation - alternate expressions
         isWaving = true;
         currentExpression = expressions.waving;
@@ -236,7 +249,7 @@
 
     function animate() {
         // Smooth movement towards target
-        if (!isDragging && !isAngry) {
+        if (!isDragging && emotionalState === "normal") {
             const dx = targetX - posX;
             const dy = targetY - posY;
 
@@ -251,6 +264,13 @@
             posY = Math.max(margin, Math.min(100 - margin, posY));
         }
 
+        // Update orbit angle and depth
+        if (showOrbit) {
+            orbitAngle += 0.04;
+            // Orbit z-index: front when sin > 0, back when sin < 0
+            orbitZIndex = Math.sin(orbitAngle) > 0 ? 30 : 5;
+        }
+
         animationFrame = requestAnimationFrame(animate);
     }
 
@@ -259,6 +279,8 @@
 
     function startDrag(e) {
         isDragging = true;
+        isRecovering = false;
+        showFeelingBetter = false;
         const clientX = e.type.includes("touch")
             ? e.touches[0].clientX
             : e.clientX;
@@ -269,22 +291,39 @@
         dragStartY = clientY - (posY / 100) * window.innerHeight;
         dragStartTime = Date.now();
 
-        if (angryTimeout) clearTimeout(angryTimeout);
-        if (headacheTimeout) clearTimeout(headacheTimeout);
+        if (recoveryInterval) clearInterval(recoveryInterval);
 
-        // If we start dragging again while angry, reset the headache sequence
-        if (isAngry) {
-            isGettingHeadache = false;
-            currentMessage = "STOP IT! 😤";
-            currentExpression = expressions.angry;
-        }
+        // Hide bubble during drag unless in high emotional states
+        if (emotionalState === "normal") showBubble = false;
 
-        // Hide bubble during drag until angry
-        if (!isAngry) showBubble = false;
         window.addEventListener("mousemove", onDrag);
         window.addEventListener("mouseup", stopDrag);
         window.addEventListener("touchmove", onDrag);
         window.addEventListener("touchend", stopDrag);
+    }
+
+    function triggerAngryEffects() {
+        // 😡 emojis popping inside the circle
+        const count = 5;
+        popEmojis = Array.from({ length: count }, (_, i) => ({
+            id: Date.now() + i,
+            x: Math.random() * 120 - 60,
+            y: Math.random() * 120 - 60,
+            scale: 0,
+            opacity: 0,
+            delay: i * 200,
+        }));
+
+        // Animate them in sequence
+        popEmojis.forEach((emoji, i) => {
+            setTimeout(() => {
+                popEmojis = popEmojis.map((e) =>
+                    e.id === emoji.id ? { ...e, scale: 1, opacity: 1 } : e,
+                );
+            }, emoji.delay);
+        });
+
+        showOrbit = true;
     }
 
     function onDrag(e) {
@@ -299,22 +338,34 @@
         posX = ((clientX - dragStartX) / window.innerWidth) * 100;
         posY = ((clientY - dragStartY) / window.innerHeight) * 100;
 
-        // Trigger angry after 4 seconds of dragging
-        const elapsed = Date.now() - dragStartTime;
-        if (elapsed > 4000 && !isAngry) {
-            isAngry = true;
-            isGettingHeadache = false;
-            currentExpression = expressions.angry;
-            currentMessage = "STOP IT! 😤";
-            showBubble = true;
-            isWaving = false;
-            isHovering = false;
-        }
+        dragDuration = Date.now() - dragStartTime;
 
-        if (isAngry && !isGettingHeadache) {
-            currentExpression = expressions.angry;
-            currentMessage = "STOP IT! 😤";
-            showBubble = true;
+        // Emotional Escalation Logic
+        if (dragDuration < 1500) {
+            emotionalState = "normal";
+            tintIntensity = 0;
+            isAngry = false;
+        } else if (dragDuration < 3000) {
+            emotionalState = "annoyed";
+            // Interpolate tint from 0 to 0.4 (orange)
+            tintIntensity = ((dragDuration - 1500) / 1500) * 0.4;
+            isAngry = false;
+        } else if (dragDuration < 5000) {
+            if (emotionalState !== "angry") {
+                emotionalState = "angry";
+                isAngry = true;
+                currentExpression = expressions.angry;
+                currentMessage = "STOP IT! 😤";
+                showBubble = true;
+                triggerAngryEffects();
+            }
+            tintIntensity = 0.8;
+        } else {
+            if (emotionalState !== "bad-word") {
+                emotionalState = "bad-word";
+                currentExpression = expressions.badWord;
+            }
+            tintIntensity = 0.8;
         }
 
         posX = Math.max(8, Math.min(92, posX));
@@ -331,27 +382,47 @@
         window.removeEventListener("touchmove", onDrag);
         window.removeEventListener("touchend", stopDrag);
 
-        if (isAngry) {
-            // Sequence: STOP IT -> Headache -> Normal
-            headacheTimeout = setTimeout(() => {
-                isGettingHeadache = true;
-                currentMessage = "I'm getting a headache... 😵‍💫";
-                currentExpression = expressions.bottom; // Thinking/dizzy look
+        if (emotionalState !== "normal") {
+            isRecovering = true;
 
-                angryTimeout = setTimeout(() => {
+            // Fade out emojis
+            popEmojis = popEmojis.map((e) => ({
+                ...e,
+                opacity: 0,
+                scale: 0,
+            }));
+
+            // Gracefully stop orbit
+            showOrbit = false;
+
+            // Recovery sequence
+            recoveryInterval = setInterval(() => {
+                tintIntensity -= 0.05;
+                if (tintIntensity <= 0) {
+                    tintIntensity = 0;
+                    emotionalState = "normal";
                     isAngry = false;
-                    isGettingHeadache = false;
+                    isRecovering = false;
                     currentExpression = expressions.default;
+                    clearInterval(recoveryInterval);
+
+                    // Show "Feeling better" message
+                    showFeelingBetter = true;
+                    currentMessage = "I'm feeling better 😊";
                     showBubble = true;
-                    if (!isHovering && !isWaving) {
-                        cycleMessage();
-                    }
-                }, 4000);
-            }, 2000);
+                    setTimeout(() => {
+                        showFeelingBetter = false;
+                        if (!isHovering && !isWaving) {
+                            cycleMessage();
+                        }
+                    }, 3000);
+                }
+            }, 50);
         } else {
-            // Normal release - show bubble again
             showBubble = true;
         }
+
+        dragDuration = 0;
     }
 
     onMount(() => {
@@ -374,21 +445,35 @@
 
         // Wave periodically (every 15 seconds)
         waveInterval = setInterval(() => {
-            if (!isHovering && !isDragging && !isAngry) {
+            if (
+                !isHovering &&
+                !isDragging &&
+                emotionalState === "normal" &&
+                !showFeelingBetter
+            ) {
                 doWave();
             }
         }, 15000);
 
         // Cycle messages every 5 seconds
         messageInterval = setInterval(() => {
-            if (!isHovering && !isWaving && !isAngry) {
+            if (
+                !isHovering &&
+                !isWaving &&
+                emotionalState === "normal" &&
+                !showFeelingBetter
+            ) {
                 cycleMessage();
             }
         }, 5000);
 
         // Pick new movement target every 10 seconds (only when no windows)
         moveInterval = setInterval(() => {
-            if (!hasActiveWindows && !isDragging && !isAngry) {
+            if (
+                !hasActiveWindows &&
+                !isDragging &&
+                emotionalState === "normal"
+            ) {
                 pickNewTarget();
             }
         }, 10000);
@@ -416,9 +501,30 @@
 >
     <!-- Speech Bubble -->
     {#if showBubble}
-        <div class="speech-bubble" class:wave-bubble={isWaving}>
+        <div
+            class="speech-bubble"
+            class:wave-bubble={isWaving}
+            class:feeling-better={showFeelingBetter}
+        >
             <p>{currentMessage}</p>
             <div class="bubble-tail"></div>
+        </div>
+    {/if}
+
+    <!-- Orbiting Emoji -->
+    {#if showOrbit}
+        <div
+            class="orbit-emoji"
+            style="
+                transform: translate(
+                    {Math.cos(orbitAngle) * 130}px,
+                    {Math.sin(orbitAngle) * 30}px
+                ) scale({0.8 + Math.sin(orbitAngle) * 0.4});
+                z-index: {orbitZIndex};
+                opacity: {isRecovering ? 0 : 1};
+            "
+        >
+            😵‍💫
         </div>
     {/if}
 
@@ -426,10 +532,18 @@
     <div
         class="memoji-avatar"
         class:wave-animation={isWaving}
-        class:angry-state={isAngry}
+        class:angry-state={emotionalState === "angry" ||
+            emotionalState === "bad-word"}
+        class:pop-in={emotionalState === "angry" && dragDuration < 3100}
         role="button"
         tabindex="0"
-        style="transform: perspective(600px) rotateX({tiltX}deg) rotateY({tiltY}deg);"
+        style="
+            transform: perspective(600px) rotateX({tiltX}deg) rotateY({tiltY}deg);
+            --tint-opacity: {tintIntensity};
+            --tint-color: {emotionalState === 'annoyed'
+            ? '255, 165, 0'
+            : '200, 40, 40'};
+        "
         on:mouseenter={handleMouseEnter}
         on:mouseleave={handleMouseLeave}
         on:click={handleClick}
@@ -437,6 +551,21 @@
         on:mousedown={startDrag}
         on:touchstart={startDrag}
     >
+        <!-- Popping Emojis Inside -->
+        {#each popEmojis as emoji (emoji.id)}
+            <div
+                class="pop-emoji"
+                style="
+                    left: calc(50% + {emoji.x}px);
+                    top: calc(50% + {emoji.y}px);
+                    transform: translate(-50%, -50%) scale({emoji.scale});
+                    opacity: {emoji.opacity};
+                "
+            >
+                😡
+            </div>
+        {/each}
+
         <img
             src="{base}memojis/{currentExpression}"
             alt="Shyam's Memoji"
@@ -445,7 +574,11 @@
         />
 
         <!-- Glow effect -->
-        <div class="memoji-glow" class:angry-glow={isAngry}></div>
+        <div
+            class="memoji-glow"
+            class:angry-glow={emotionalState === "angry" ||
+                emotionalState === "bad-word"}
+        ></div>
     </div>
 </div>
 
@@ -458,7 +591,10 @@
         flex-direction: column;
         align-items: center;
         pointer-events: none;
-        /* Removed CSS transitions as they conflict with JS-driven dragging and animation */
+        /* Jiggly position transition */
+        transition:
+            left 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+            top 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
 
     /* Speech Bubble */
@@ -487,6 +623,29 @@
         color: #1d1d1f;
         text-align: center;
         line-height: 1.4;
+    }
+
+    .speech-bubble.feeling-better {
+        animation: feelingBetterFade 3s forwards;
+    }
+
+    @keyframes feelingBetterFade {
+        0% {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        20% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        80% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        100% {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
     }
 
     .bubble-tail {
@@ -549,6 +708,60 @@
             0 0 0 2px rgba(255, 255, 255, 0.6) inset;
         pointer-events: auto;
         user-select: none;
+        overflow: hidden;
+        /* Background tint instead of overlay */
+        background: linear-gradient(
+                145deg,
+                rgba(var(--tint-color), var(--tint-opacity)),
+                rgba(var(--tint-color), calc(var(--tint-opacity) * 0.7))
+            ),
+            linear-gradient(
+                145deg,
+                rgba(255, 255, 255, 0.95),
+                rgba(255, 255, 255, 0.8)
+            );
+        background-blend-mode: overlay;
+    }
+
+    .pop-emoji {
+        position: absolute;
+        font-size: 32px;
+        pointer-events: none;
+        z-index: 10;
+        animation: emojiPop 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275)
+            infinite alternate;
+    }
+
+    @keyframes emojiPop {
+        0% {
+            transform: translate(-50%, -50%) scale(0.8);
+        }
+        100% {
+            transform: translate(-50%, -50%) scale(1.2);
+        }
+    }
+
+    .orbit-emoji {
+        position: absolute;
+        font-size: 32px;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+    }
+
+    .memoji-avatar.pop-in {
+        animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    @keyframes popIn {
+        0% {
+            transform: scale(1);
+        }
+        50% {
+            transform: scale(1.15);
+        }
+        100% {
+            transform: scale(1);
+        }
     }
 
     /* Wave animation on the avatar */
@@ -585,19 +798,19 @@
         box-shadow:
             0 20px 60px rgba(255, 0, 0, 0.3),
             0 0 0 2px rgba(255, 100, 100, 0.6) inset !important;
-        animation: shake 0.1s ease-in-out infinite;
+        animation: shake 0.2s ease-in-out infinite;
     }
 
     @keyframes shake {
         0%,
         100% {
-            transform: perspective(600px) translateX(0);
+            transform: rotate(0deg);
         }
         25% {
-            transform: perspective(600px) translateX(-2px);
+            transform: rotate(-1deg);
         }
         75% {
-            transform: perspective(600px) translateX(2px);
+            transform: rotate(1deg);
         }
     }
 
@@ -607,6 +820,8 @@
         object-fit: contain;
         pointer-events: none;
         filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.12));
+        position: relative;
+        z-index: 2;
     }
 
     /* Glow effect behind memoji */
