@@ -87,9 +87,11 @@
                         </li>
                         <li>
                             Google UX Design | June 2025
-                            <span
-                                style="color: var(--accent-color); text-decoration: none; cursor: default;"
-                                >(Coming Soon)</span
+                            <a
+                                href="https://www.coursera.org/account/accomplishments/professional-cert/BZ0KH557QCVH"
+                                target="_blank"
+                                style="color: var(--accent-color); text-decoration: none;"
+                                >(View)</a
                             >
                         </li>
                     </ul>
