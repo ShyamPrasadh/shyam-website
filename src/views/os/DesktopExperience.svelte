@@ -384,6 +384,95 @@
             </div>
         {/if}
     </div>
+
+    <!-- MOBILE-ONLY EXPERIENCE - MINIMALIST -->
+    <div class="mobile-experience" in:fade={{ duration: 800 }}>
+        <!-- Centered Content -->
+        <div class="mobile-center">
+            <!-- Time Display (iOS Lock Screen Style) -->
+            <div class="time-display" in:fly={{ y: -20, delay: 200 }}>
+                <span class="time-big"
+                    >{currentTime.toLocaleTimeString([], {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                    })}</span
+                >
+                <span class="date-sub"
+                    >{currentTime.toLocaleDateString("en-US", {
+                        weekday: "long",
+                        month: "long",
+                        day: "numeric",
+                    })}</span
+                >
+            </div>
+
+            <!-- Profile Card -->
+            <div class="profile-card" in:scale={{ delay: 400 }}>
+                <div class="profile-image">👨‍💻</div>
+                <h1 class="profile-name-mobile">Shyam Prasadh</h1>
+                <p class="profile-title-mobile">UX Designer & Developer</p>
+                <div class="status-pill">
+                    <span class="status-dot"></span>
+                    <span>{workAvailability.status}</span>
+                </div>
+            </div>
+
+            <!-- Quick Stats - Minimal -->
+            <div class="mini-stats" in:fade={{ delay: 600 }}>
+                <div class="mini-stat">
+                    <span class="mini-value">10+</span>
+                    <span class="mini-label">Projects</span>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="mini-stat">
+                    <span class="mini-value">5+</span>
+                    <span class="mini-label">Years</span>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="mini-stat">
+                    <span class="mini-value">3</span>
+                    <span class="mini-label">Certs</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Actions (Like iOS flashlight/camera shortcuts) -->
+        <div class="bottom-actions" in:fly={{ y: 30, delay: 800 }}>
+            <!-- Skills Preview Row -->
+            <div class="skills-row">
+                {#each skills.slice(0, 5) as skill}
+                    <div class="skill-bubble">
+                        <img src={skill.icon} alt={skill.name} />
+                    </div>
+                {/each}
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="action-row">
+                <a href="mailto:contact@shyam.dev" class="action-btn">
+                    <span class="action-icon">✉️</span>
+                    <span>Email</span>
+                </a>
+                <a href="#portfolio" class="action-btn primary">
+                    <span class="action-icon">📂</span>
+                    <span>Portfolio</span>
+                </a>
+            </div>
+
+            <!-- Social Links -->
+            <div class="social-links-mobile">
+                {#each socialLinks as link}
+                    <a
+                        href={link.url}
+                        target="_blank"
+                        class="social-link-mobile"
+                    >
+                        <img src={link.icon} alt={link.name} />
+                    </a>
+                {/each}
+            </div>
+        </div>
+    </div>
 {/if}
 
 <style>
@@ -1014,6 +1103,312 @@
         }
         .desktop-center {
             display: none;
+        }
+    }
+
+    /* Mobile Experience - Hidden by default */
+    .mobile-experience {
+        display: none;
+    }
+
+    /* Switch to mobile view below 768px */
+    @media (max-width: 768px) {
+        /* Hide desktop experience */
+        .desktop-experience {
+            display: none !important;
+        }
+
+        /* Show mobile experience - Lock Screen Layout */
+        .mobile-experience {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: absolute;
+            top: 35px;
+            left: 0;
+            right: 0;
+            bottom: 65px;
+            padding: 30px 24px 24px;
+            pointer-events: auto;
+            z-index: 5;
+        }
+
+        /* Centered Content Container */
+        .mobile-center {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 28px;
+        }
+
+        /* Time Display - iOS Lock Screen Style */
+        .time-display {
+            text-align: center;
+        }
+
+        .time-big {
+            display: block;
+            font-size: 64px;
+            font-weight: 200;
+            color: white;
+            letter-spacing: -4px;
+            line-height: 1;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .date-sub {
+            display: block;
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.7);
+            font-weight: 500;
+            margin-top: 4px;
+        }
+
+        /* Profile Card */
+        .profile-card {
+            text-align: center;
+            padding: 24px 32px;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .profile-image {
+            font-size: 48px;
+            margin-bottom: 12px;
+        }
+
+        .profile-name-mobile {
+            font-size: 26px;
+            font-weight: 700;
+            color: white;
+            margin: 0 0 4px 0;
+            letter-spacing: -0.5px;
+        }
+
+        .profile-title-mobile {
+            font-size: 15px;
+            color: rgba(255, 255, 255, 0.6);
+            margin: 0 0 16px 0;
+        }
+
+        .status-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(48, 209, 88, 0.15);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            color: #30d158;
+            font-weight: 600;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: #30d158;
+            border-radius: 50%;
+            animation: statusPulse 2s infinite;
+        }
+
+        @keyframes statusPulse {
+            0%,
+            100% {
+                box-shadow: 0 0 0 0 rgba(48, 209, 88, 0.4);
+            }
+            50% {
+                box-shadow: 0 0 0 6px rgba(48, 209, 88, 0);
+            }
+        }
+
+        /* Mini Stats Row */
+        .mini-stats {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .mini-stat {
+            text-align: center;
+        }
+
+        .mini-value {
+            display: block;
+            font-size: 28px;
+            font-weight: 700;
+            color: white;
+            line-height: 1;
+        }
+
+        .mini-label {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.5);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+
+        .stat-divider {
+            width: 1px;
+            height: 30px;
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        /* Bottom Actions */
+        .bottom-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            align-items: center;
+        }
+
+        /* Skills Row */
+        .skills-row {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+
+        .skill-bubble {
+            width: 44px;
+            height: 44px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s ease;
+        }
+
+        .skill-bubble:active {
+            transform: scale(0.9);
+        }
+
+        .skill-bubble img {
+            width: 26px;
+            height: 26px;
+            object-fit: contain;
+        }
+
+        /* Action Buttons */
+        .action-row {
+            display: flex;
+            gap: 12px;
+            width: 100%;
+            max-width: 320px;
+        }
+
+        .action-btn {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 14px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 14px;
+            text-decoration: none;
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .action-btn.primary {
+            background: rgba(10, 132, 255, 0.3);
+            border-color: rgba(10, 132, 255, 0.4);
+        }
+
+        .action-btn:active {
+            transform: scale(0.97);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .action-btn.primary:active {
+            background: rgba(10, 132, 255, 0.4);
+        }
+
+        .action-icon {
+            font-size: 18px;
+        }
+
+        /* Social Links */
+        .social-links-mobile {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+        }
+
+        .social-link-mobile {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0.7;
+            transition: all 0.2s ease;
+        }
+
+        .social-link-mobile:active {
+            opacity: 1;
+            transform: scale(0.9);
+        }
+
+        .social-link-mobile img {
+            width: 24px;
+            height: 24px;
+        }
+    }
+
+    /* Very small mobile adjustments */
+    @media (max-width: 380px) {
+        .mobile-experience {
+            padding: 20px 16px 16px;
+        }
+
+        .time-big {
+            font-size: 52px;
+        }
+
+        .date-sub {
+            font-size: 14px;
+        }
+
+        .profile-card {
+            padding: 20px 24px;
+        }
+
+        .profile-name-mobile {
+            font-size: 22px;
+        }
+
+        .mini-value {
+            font-size: 24px;
+        }
+
+        .skill-bubble {
+            width: 38px;
+            height: 38px;
+        }
+
+        .skill-bubble img {
+            width: 22px;
+            height: 22px;
+        }
+
+        .action-btn {
+            padding: 12px 16px;
+            font-size: 13px;
         }
     }
 </style>
